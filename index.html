@@ -241,8 +241,8 @@
 </head>
 <body class="font-pixel antialiased text-xs sm:text-sm selection:bg-arcade-pink selection:text-white">
 
-  <!-- Scanlines CRT Overlay (Toggleable) -->
-  <div id="crt-screen" class="crt-overlay"></div>
+  <!-- Scanlines CRT Overlay (Toggleable, OFF by default) -->
+  <div id="crt-screen" class="crt-overlay crt-off"></div>
 
   <!-- Interactive Pixel Starfield Background -->
   <canvas id="stars-canvas"></canvas>
@@ -308,7 +308,7 @@
 
         <!-- CRT Scanline Toggle -->
         <button id="crt-toggle-btn" class="pixel-btn bg-arcade-surface hover:bg-arcade-cyan hover:text-black text-white px-2.5 py-1 text-[9px]" title="Toggle CRT Scanlines">
-          <span>CRT: ON</span>
+          <span>CRT: OFF</span>
         </button>
 
         <!-- GitHub / Contact Quick Button -->
@@ -1931,11 +1931,16 @@
 
     const crtBtn = document.getElementById('crt-toggle-btn');
     const crtScreen = document.getElementById('crt-screen');
-    let crtEnabled = true;
+    // CRT filter is OFF by default unless user previously explicitly turned it ON
+    let crtEnabled = false;
 
-    crtBtn.addEventListener('click', () => {
-      crtEnabled = !crtEnabled;
-      sound.playBlip(600, 0.05);
+    try {
+      if (localStorage.getItem('crt_enabled') === 'true') {
+        crtEnabled = true;
+      }
+    } catch (e) {}
+
+    function updateCrtState() {
       if (crtEnabled) {
         crtScreen.classList.remove('crt-off');
         crtBtn.querySelector('span').textContent = 'CRT: ON';
@@ -1943,6 +1948,18 @@
         crtScreen.classList.add('crt-off');
         crtBtn.querySelector('span').textContent = 'CRT: OFF';
       }
+    }
+
+    // Set initial display state on page load
+    updateCrtState();
+
+    crtBtn.addEventListener('click', () => {
+      crtEnabled = !crtEnabled;
+      sound.playBlip(600, 0.05);
+      updateCrtState();
+      try {
+        localStorage.setItem('crt_enabled', crtEnabled ? 'true' : 'false');
+      } catch (e) {}
     });
 
     // Score ticker on scroll
