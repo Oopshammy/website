@@ -383,7 +383,7 @@
             <div class="text-[9px] text-gray-400 mt-1">UPTIME RECORD</div>
           </div>
           <div class="bg-arcade-surface/60 p-2 border border-black">
-            <div class="text-arcade-cyan font-pixel text-sm">1.8K+</div>
+            <div id="git-commits-count" class="text-arcade-cyan font-pixel text-sm">1.8K+</div>
             <div class="text-[9px] text-gray-400 mt-1">GIT COMMITS</div>
           </div>
         </div>
@@ -3029,6 +3029,117 @@
         requestAnimationFrame(mascotLoop);
       }
       mascotLoop();
+    })();
+
+    /* =========================================================
+       11. DYNAMIC GITHUB COMMIT COUNTER & RETRO TALLY ANIMATION
+       Fetches live commit stats from GitHub REST API, caches in
+       localStorage, and counts up with an 8-bit digital feel.
+       ========================================================= */
+    (function initLiveGitCommits() {
+      // TODO: Replace with your GitHub username if different
+      const GITHUB_USERNAME = 'Oopshammy';
+      const counterEl = document.getElementById('git-commits-count');
+      if (!counterEl) return;
+
+      const CACHE_KEY = `gh_commit_count_${GITHUB_USERNAME}`;
+      const CACHE_TTL_MS = 60 * 60 * 1000; // Cache for 1 hour to respect GitHub rate limits
+      const FALLBACK_COUNT = 1800; // Fallback estimate if offline/rate-limited
+
+      // Retro digital tally roll-up animation
+      function animateTally(targetCount) {
+        const duration = 1200; // ms
+        const startTime = performance.now();
+        const startVal = 0;
+
+        function formatCount(num) {
+          if (num >= 1000) {
+            return (num / 1000).toFixed(1) + 'K+';
+          }
+          return num + '+';
+        }
+
+        counterEl.title = `${targetCount.toLocaleString()} total commits on GitHub`;
+
+        function step(now) {
+          const elapsed = now - startTime;
+          const progress = Math.min(elapsed / duration, 1);
+          // Ease-out cubic curve
+          const easeOut = 1 - Math.pow(1 - progress, 3);
+          const current = Math.floor(startVal + (targetCount - startVal) * easeOut);
+
+          counterEl.textContent = formatCount(current);
+
+          if (progress < 1) {
+            requestAnimationFrame(step);
+          } else {
+            counterEl.textContent = formatCount(targetCount);
+          }
+        }
+
+        requestAnimationFrame(step);
+      }
+
+      // Check localStorage cache first
+      try {
+        const cachedRaw = localStorage.getItem(CACHE_KEY);
+        if (cachedRaw) {
+          const cached = JSON.parse(cachedRaw);
+          const isFresh = (Date.now() - cached.timestamp) < CACHE_TTL_MS;
+          if (isFresh && typeof cached.count === 'number') {
+            animateTally(cached.count);
+            return;
+          }
+        }
+      } catch (e) {
+        console.warn('GitHub cache read error:', e);
+      }
+
+      // Fetch from GitHub REST API (Search Commits endpoint)
+      const apiUrl = `https://api.github.com/search/commits?q=author:${encodeURIComponent(GITHUB_USERNAME)}`;
+      
+      fetch(apiUrl, {
+        headers: {
+          'Accept': 'application/vnd.github.cloak-preview+json'
+        }
+      })
+      .then(response => {
+        if (!response.ok) {
+          throw new Error(`GitHub API HTTP ${response.status}`);
+        }
+        return response.json();
+      })
+      .then(data => {
+        let count = data && typeof data.total_count === 'number' ? data.total_count : null;
+        if (count !== null && count > 0) {
+          // Cache successful result
+          try {
+            localStorage.setItem(CACHE_KEY, JSON.stringify({
+              count: count,
+              timestamp: Date.now()
+            }));
+          } catch (e) {}
+          animateTally(count);
+        } else {
+          // If search commits returned 0, fallback gracefully
+          animateTally(FALLBACK_COUNT);
+        }
+      })
+      .catch(err => {
+        console.warn('GitHub commit count fetch error (rate-limited or offline), using cached/fallback:', err);
+        // Try fallback to any stale cache or default
+        try {
+          const staleRaw = localStorage.getItem(CACHE_KEY);
+          if (staleRaw) {
+            const stale = JSON.parse(staleRaw);
+            if (typeof stale.count === 'number') {
+              animateTally(stale.count);
+              return;
+            }
+          }
+        } catch (e) {}
+        animateTally(FALLBACK_COUNT);
+      });
     })();
   </script>
 </body>
