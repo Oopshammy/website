@@ -1,0 +1,2585 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PLAYER 1 // 8-Bit Retro Arcade Portfolio</title>
+  <meta name="description" content="Level 99 Full-Stack Developer & Sports-Tech Enthusiast. 8-Bit / 16-Bit Retro Arcade Portfolio.">
+  <meta name="theme-color" content="#ff2a85">
+
+  <!-- Google Fonts: Press Start 2P, Silkscreen, VT323 -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Silkscreen:wght@400;700&family=VT323&display=swap" rel="stylesheet">
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            arcade: {
+              black: '#080410',
+              deep: '#0f071d',
+              surface: '#180c30',
+              panel: '#221245',
+              pink: '#ff2a85',
+              'pink-glow': '#ff60a8',
+              mint: '#00ff88',
+              'mint-glow': '#5cffb1',
+              cyan: '#00e5ff',
+              gold: '#ffbe0b',
+              purple: '#843bf7',
+              red: '#ff3366',
+              barcaBlue: '#004d98',
+              barcaGarnet: '#a50044',
+              barcaGold: '#edbb00'
+            }
+          },
+          fontFamily: {
+            pixel: ['"Press Start 2P"', 'monospace'],
+            silk: ['"Silkscreen"', 'monospace'],
+            vt: ['"VT323"', 'monospace']
+          },
+          animation: {
+            'pixel-bounce': 'pixelBounce 1s infinite alternate steps(2)',
+            'blink': 'blink 0.8s infinite steps(1)',
+            'float': 'float 3s ease-in-out infinite alternate',
+            'pulse-glow': 'pulseGlow 2s infinite alternate',
+            'scanline-scroll': 'scanlineScroll 10s linear infinite'
+          },
+          keyframes: {
+            pixelBounce: {
+              '0%': { transform: 'translateY(0)' },
+              '100%': { transform: 'translateY(-8px)' }
+            },
+            blink: {
+              '0%, 100%': { opacity: '1' },
+              '50%': { opacity: '0' }
+            },
+            float: {
+              '0%': { transform: 'translateY(0px)' },
+              '100%': { transform: 'translateY(-10px)' }
+            },
+            pulseGlow: {
+              '0%': { filter: 'drop-shadow(0 0 4px #ff2a85)' },
+              '100%': { filter: 'drop-shadow(0 0 16px #00e5ff)' }
+            },
+            scanlineScroll: {
+              '0%': { backgroundPosition: '0 0' },
+              '100%': { backgroundPosition: '0 100%' }
+            }
+          }
+        }
+      }
+    };
+  </script>
+
+  <style>
+    /* CSS Pixel Rendering & Custom Retro Styling */
+    * {
+      image-rendering: pixelated;
+      image-rendering: -moz-crisp-edges;
+      image-rendering: crisp-edges;
+    }
+
+    body {
+      background-color: #080410;
+      color: #f0f0ff;
+      overflow-x: hidden;
+      cursor: crosshair;
+    }
+
+    /* Pixel Shadow Box Styles */
+    .pixel-box {
+      box-shadow: 
+        0 -4px 0 0 #000,
+        0 4px 0 0 #000,
+        -4px 0 0 0 #000,
+        4px 0 0 0 #000,
+        0 0 0 4px #221245;
+    }
+
+    .pixel-box-pink {
+      box-shadow: 
+        0 -4px 0 0 #000,
+        0 4px 0 0 #000,
+        -4px 0 0 0 #000,
+        4px 0 0 0 #000,
+        0 0 0 4px #ff2a85,
+        0 0 15px rgba(255, 42, 133, 0.4);
+    }
+
+    .pixel-box-mint {
+      box-shadow: 
+        0 -4px 0 0 #000,
+        0 4px 0 0 #000,
+        -4px 0 0 0 #000,
+        4px 0 0 0 #000,
+        0 0 0 4px #00ff88,
+        0 0 15px rgba(0, 255, 136, 0.4);
+    }
+
+    .pixel-box-cyan {
+      box-shadow: 
+        0 -4px 0 0 #000,
+        0 4px 0 0 #000,
+        -4px 0 0 0 #000,
+        4px 0 0 0 #000,
+        0 0 0 4px #00e5ff,
+        0 0 15px rgba(0, 229, 255, 0.4);
+    }
+
+    /* Pixel Button Pressed States */
+    .pixel-btn {
+      position: relative;
+      border: 3px solid #000;
+      box-shadow: 4px 4px 0 0 #000;
+      transition: all 0.05s steps(2);
+      user-select: none;
+    }
+    .pixel-btn:active {
+      transform: translate(3px, 3px);
+      box-shadow: 1px 1px 0 0 #000;
+    }
+
+    /* CRT Scanline Overlay */
+    .crt-overlay {
+      pointer-events: none;
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.35) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.03));
+      background-size: 100% 4px, 6px 100%;
+      opacity: 0.85;
+      display: block;
+    }
+
+    .crt-overlay.crt-off {
+      display: none;
+    }
+
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar {
+      width: 12px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #080410;
+      border-left: 2px solid #221245;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #ff2a85;
+      border: 2px solid #000;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #00ff88;
+    }
+
+    /* Speech Bubble Triangle */
+    .speech-bubble {
+      position: relative;
+    }
+    .speech-bubble::after {
+      content: '';
+      position: absolute;
+      bottom: -12px;
+      left: 24px;
+      width: 0;
+      height: 0;
+      border-left: 10px solid transparent;
+      border-right: 10px solid transparent;
+      border-top: 12px solid #fff;
+    }
+
+    /* Game Cartridge Shape */
+    .cartridge-card {
+      transition: transform 0.2s steps(4), box-shadow 0.2s steps(4);
+    }
+    .cartridge-card:hover {
+      transform: translateY(-8px);
+    }
+
+    /* Custom particle canvas sits above background */
+    #cursor-canvas {
+      pointer-events: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: 9998;
+    }
+
+    #stars-canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+      pointer-events: none;
+    }
+  </style>
+</head>
+<body class="font-pixel antialiased text-xs sm:text-sm selection:bg-arcade-pink selection:text-white">
+
+  <!-- Scanlines CRT Overlay (Toggleable) -->
+  <div id="crt-screen" class="crt-overlay"></div>
+
+  <!-- Interactive Pixel Starfield Background -->
+  <canvas id="stars-canvas"></canvas>
+
+  <!-- Interactive Custom Cursor Spark Canvas -->
+  <canvas id="cursor-canvas"></canvas>
+
+  <!-- ======================================================== -->
+  <!-- RETRO ARCADE TOP HUD BAR                                  -->
+  <!-- ======================================================== -->
+  <header class="fixed top-0 left-0 w-full z-50 bg-arcade-deep/95 border-b-4 border-arcade-surface backdrop-blur-sm px-3 py-2">
+    <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-3">
+      
+      <!-- Left: Player 1 Status & Vitals -->
+      <div class="flex items-center gap-3">
+        <div class="flex items-center gap-2 bg-arcade-surface px-2.5 py-1.5 border-2 border-black">
+          <span class="w-3 h-3 bg-arcade-mint inline-block animate-blink"></span>
+          <span class="text-arcade-mint font-bold tracking-wider text-[10px] sm:text-xs">1P READY</span>
+        </div>
+        
+        <!-- Vitals Bars -->
+        <div class="hidden md:flex flex-col gap-1 text-[9px] font-silk">
+          <div class="flex items-center gap-2">
+            <span class="text-arcade-pink font-bold w-6">HP</span>
+            <div class="w-24 h-2.5 bg-black border border-arcade-pink/50 p-0.5">
+              <div class="h-full bg-gradient-to-r from-arcade-pink to-arcade-red w-full"></div>
+            </div>
+            <span class="text-arcade-pink">100/100</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="text-arcade-cyan font-bold w-6">MP</span>
+            <div class="w-24 h-2.5 bg-black border border-arcade-cyan/50 p-0.5">
+              <div class="h-full bg-gradient-to-r from-arcade-cyan to-blue-500 w-[92%]"></div>
+            </div>
+            <span class="text-arcade-cyan">92/100</span>
+          </div>
+        </div>
+
+        <!-- Score / Coin Counter -->
+        <div class="flex items-center gap-1.5 bg-arcade-surface px-2.5 py-1.5 border-2 border-black text-arcade-gold font-silk">
+          <span>★ SCORE</span>
+          <span id="hud-score" class="text-white font-pixel text-[11px]">002480</span>
+        </div>
+      </div>
+
+      <!-- Center: Navigation Links -->
+      <nav class="hidden lg:flex items-center gap-3 text-[10px]">
+        <a href="#hero" class="hover:text-arcade-pink transition-colors px-2 py-1">[HOME]</a>
+        <a href="#about" class="hover:text-arcade-pink transition-colors px-2 py-1">[LVL.1 ABOUT]</a>
+        <a href="#projects" class="hover:text-arcade-mint transition-colors px-2 py-1">[LVL.2 QUESTS]</a>
+        <a href="#pitwall" class="hover:text-arcade-cyan transition-colors px-2 py-1">[PIT WALL]</a>
+        <a href="#experience" class="hover:text-arcade-gold transition-colors px-2 py-1">[LVL.3 EXP]</a>
+        <a href="#arcade" class="text-arcade-pink hover:text-arcade-mint transition-colors px-2 py-1 animate-pulse">[★ F1 MINI-GAME]</a>
+      </nav>
+
+      <!-- Right: SFX, CRT, and Quick Actions -->
+      <div class="flex items-center gap-2">
+        <!-- SFX Toggle Button -->
+        <button id="sfx-toggle-btn" class="pixel-btn bg-arcade-surface hover:bg-arcade-pink text-white px-2.5 py-1 text-[9px] flex items-center gap-1" title="Toggle 8-Bit Audio">
+          <span id="sfx-icon">🔊</span>
+          <span id="sfx-text">SFX: ON</span>
+        </button>
+
+        <!-- CRT Scanline Toggle -->
+        <button id="crt-toggle-btn" class="pixel-btn bg-arcade-surface hover:bg-arcade-cyan hover:text-black text-white px-2.5 py-1 text-[9px]" title="Toggle CRT Scanlines">
+          <span>CRT: ON</span>
+        </button>
+
+        <!-- GitHub / Contact Quick Button -->
+        <a href="#contact" class="pixel-btn bg-arcade-mint hover:bg-white text-black font-bold px-2.5 py-1 text-[10px]">
+          CONNECT
+        </a>
+      </div>
+
+    </div>
+  </header>
+
+  <!-- ======================================================== -->
+  <!-- HERO SECTION: TITLE SCREEN & BARCELONA PITCH ARENA       -->
+  <!-- ======================================================== -->
+  <section id="hero" class="relative min-h-screen pt-28 pb-16 flex items-center justify-center z-10 px-4">
+    <div class="max-w-6xl w-full mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+      
+      <!-- Hero Left: Player Badge, Headline, Stats, CTAs -->
+      <div class="lg:col-span-7 flex flex-col gap-5 text-left">
+        
+        <!-- Retro Flashing Title Tag -->
+        <div class="inline-flex items-center gap-2 self-start bg-arcade-surface/90 border-2 border-arcade-pink px-3 py-1.5 shadow-[4px_4px_0_#ff2a85]">
+          <span class="text-arcade-pink animate-blink">▶</span>
+          <span class="text-arcade-pink font-bold tracking-widest text-[10px] sm:text-xs">STAGE 01 // WELCOME ADVENTURER</span>
+        </div>
+
+        <!-- Main Title -->
+        <div class="flex flex-col gap-2">
+          <h1 class="text-2xl sm:text-4xl lg:text-5xl font-bold leading-tight tracking-tight text-white">
+            HELLO, I'M <br>
+            <span class="text-arcade-pink drop-shadow-[3px_3px_0_#000]">PLAYER 1</span>
+          </h1>
+          <p class="font-vt text-2xl sm:text-3xl text-arcade-cyan tracking-wide">
+            &lt; LEVEL 99 FULL-STACK ARCHITECT & SPORTS-TECH DEV /&gt;
+          </p>
+        </div>
+
+        <!-- Narrative Description Box -->
+        <div class="pixel-box bg-arcade-deep/90 p-4 border-2 border-arcade-purple text-gray-300 leading-relaxed font-silk text-xs sm:text-sm">
+          <p class="mb-2">
+            Specializing in high-performance web systems, real-time sports telemetry, and resilient AI architectures. Blending the passion of Catalan football with the precision of Formula 1 telemetry.
+          </p>
+          <div class="flex flex-wrap gap-2 pt-2 text-[10px] font-pixel text-arcade-mint">
+            <span class="bg-black/50 px-2 py-1 border border-arcade-mint/40">⚡ Next.js / TypeScript</span>
+            <span class="bg-black/50 px-2 py-1 border border-arcade-mint/40">⚽ Sports Analytics</span>
+            <span class="bg-black/50 px-2 py-1 border border-arcade-mint/40">🏎 Telemetry Feeds</span>
+            <span class="bg-black/50 px-2 py-1 border border-arcade-mint/40">🧠 Neural Models</span>
+          </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="flex flex-wrap items-center gap-4 pt-2">
+          <a href="#about" class="pixel-btn bg-arcade-pink hover:bg-white text-black font-bold px-5 py-3 text-xs sm:text-sm flex items-center gap-2 shadow-[4px_4px_0_#fff]">
+            <span>► INSERT COIN // START</span>
+          </a>
+          <a href="#projects" class="pixel-btn bg-arcade-surface hover:bg-arcade-mint hover:text-black text-white px-4 py-3 text-xs sm:text-sm flex items-center gap-2">
+            <span>⚔ VIEW QUESTS</span>
+          </a>
+          <a href="#arcade" class="pixel-btn bg-arcade-gold hover:bg-white text-black font-bold px-4 py-3 text-xs sm:text-sm flex items-center gap-2">
+            <span>🏁 F1 REACTION</span>
+          </a>
+        </div>
+
+        <!-- Quick Retro Stats Bar -->
+        <div class="grid grid-cols-3 gap-2 pt-4 border-t-2 border-arcade-surface font-silk text-center">
+          <div class="bg-arcade-surface/60 p-2 border border-black">
+            <div class="text-arcade-gold font-pixel text-sm">25+</div>
+            <div class="text-[9px] text-gray-400 mt-1">QUESTS DEPLOYED</div>
+          </div>
+          <div class="bg-arcade-surface/60 p-2 border border-black">
+            <div class="text-arcade-mint font-pixel text-sm">99.9%</div>
+            <div class="text-[9px] text-gray-400 mt-1">UPTIME RECORD</div>
+          </div>
+          <div class="bg-arcade-surface/60 p-2 border border-black">
+            <div class="text-arcade-cyan font-pixel text-sm">1.8K+</div>
+            <div class="text-[9px] text-gray-400 mt-1">GIT COMMITS</div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Hero Right: Interactive Barcelona Pixel Crest & Football Pitch Juggle Canvas -->
+      <div class="lg:col-span-5 flex flex-col items-center justify-center">
+        
+        <div class="relative w-full max-w-md pixel-box-pink bg-arcade-deep p-4 border-4 border-black">
+          
+          <!-- Top Pitch Header -->
+          <div class="flex items-center justify-between pb-3 mb-2 border-b-2 border-arcade-surface">
+            <div class="flex items-center gap-2">
+              <span class="w-3 h-3 bg-arcade-pink rounded-none animate-ping"></span>
+              <span class="text-arcade-gold text-[10px] font-bold">CAMP NOU PIXEL ARENA</span>
+            </div>
+            <div class="text-[9px] font-silk text-arcade-cyan">
+              CLICK / TAP TO JUGGLE!
+            </div>
+          </div>
+
+          <!-- Interactive Pitch Canvas -->
+          <div class="relative bg-emerald-950 border-4 border-black overflow-hidden shadow-inner">
+            <!-- Pitch Grid Markings Overlay -->
+            <div class="absolute inset-0 pointer-events-none opacity-20 bg-[linear-gradient(to_bottom,transparent_49%,#fff_50%,transparent_51%)] bg-[length:100%_40px]"></div>
+            <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-28 h-28 rounded-full border-2 border-white/20 pointer-events-none"></div>
+
+            <canvas id="hero-pitch-canvas" width="380" height="340" class="w-full h-auto cursor-pointer block"></canvas>
+            
+            <!-- Dynamic Floating Speech Bubble -->
+            <div id="player-speech-bubble" class="absolute top-3 left-4 speech-bubble bg-white text-black p-2 border-2 border-black font-pixel text-[9px] max-w-[200px] shadow-[3px_3px_0_#000] pointer-events-none transition-opacity duration-300">
+              Visca el Barça! ⚽
+            </div>
+
+            <!-- Juggle Counter Overlay -->
+            <div class="absolute bottom-2 right-2 bg-black/80 border border-arcade-gold px-2 py-1 text-[9px] text-arcade-gold font-silk">
+              KICKS: <span id="juggle-counter" class="text-white font-pixel">0</span> | BEST: <span id="juggle-best" class="text-arcade-mint font-pixel">0</span>
+            </div>
+          </div>
+
+          <!-- Pitch Controls & Info -->
+          <div class="flex items-center justify-between mt-3 pt-2 text-[9px] font-silk text-gray-400">
+            <div class="flex items-center gap-1">
+              <span class="text-arcade-mint">PLAYER:</span> #10 BLAUGRANA
+            </div>
+            <button id="reset-ball-btn" class="text-arcade-pink hover:text-white underline">
+              [RESET BALL]
+            </button>
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ======================================================== -->
+  <!-- LEVEL 01: ABOUT ME & DUAL SCREEN HANDHELD CONSOLE (DS)  -->
+  <!-- ======================================================== -->
+  <section id="about" class="relative py-20 px-4 z-10">
+    <div class="max-w-6xl mx-auto">
+      
+      <!-- Section Header -->
+      <div class="text-center mb-16 flex flex-col items-center">
+        <div class="inline-flex items-center gap-2 bg-arcade-surface px-3 py-1 border-2 border-arcade-pink text-arcade-pink text-[10px] mb-3">
+          <span>LEVEL 01</span>
+          <span>//</span>
+          <span>CHARACTER PROFILE</span>
+        </div>
+        <h2 class="text-2xl sm:text-3xl font-bold text-white tracking-wide">
+          THE HANDHELD COMPENDIUM
+        </h2>
+        <p class="font-vt text-xl sm:text-2xl text-arcade-cyan mt-1">
+          Inspect character bio, wizardry gear, and weapon attributes
+        </p>
+      </div>
+
+      <!-- Main Layout: Flanking RPG Cards & Center Pink DS Console -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+        
+        <!-- Left Column: Education & Academia -->
+        <div class="lg:col-span-3 flex flex-col gap-6">
+          
+          <!-- Education Card -->
+          <div class="pixel-box bg-arcade-surface p-4 border-2 border-arcade-gold">
+            <div class="flex items-center justify-between border-b-2 border-arcade-deep pb-2 mb-3">
+              <div class="flex items-center gap-2">
+                <span class="text-arcade-gold">📜</span>
+                <span class="text-arcade-gold font-bold text-[10px]">WIZARDRY ACADEMIA</span>
+              </div>
+              <span class="text-[8px] bg-black px-1.5 py-0.5 text-arcade-mint">HONORS</span>
+            </div>
+            
+            <div class="flex flex-col gap-3 font-silk text-xs">
+              <div>
+                <div class="text-white font-bold">B.S. in Computer Science & Engineering</div>
+                <div class="text-arcade-cyan text-[10px] mt-0.5">Top Tier University // 2021 - 2025</div>
+                <div class="text-gray-400 text-[10px] mt-1 leading-normal font-sans">
+                  Specialized in Distributed Systems, Artificial Intelligence, and Computer Vision. Dean's Academic List.
+                </div>
+              </div>
+
+              <div class="border-t border-arcade-deep pt-2">
+                <span class="text-arcade-gold text-[9px] font-pixel block mb-1">CORE QUESTS PASSED:</span>
+                <ul class="text-[9px] text-gray-300 list-disc list-inside space-y-0.5">
+                  <li>Data Structures & Algorithms (A+)</li>
+                  <li>Distributed Computing Systems</li>
+                  <li>Neural Networks & Deep Learning</li>
+                  <li>Database Architecture & Optimization</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <!-- Soft Skills / Passive Buffs -->
+          <div class="pixel-box bg-arcade-surface p-4 border-2 border-arcade-mint">
+            <div class="flex items-center justify-between border-b-2 border-arcade-deep pb-2 mb-3">
+              <div class="flex items-center gap-2">
+                <span class="text-arcade-mint">✨</span>
+                <span class="text-arcade-mint font-bold text-[10px]">PASSIVE BUFFS</span>
+              </div>
+              <span class="text-[8px] text-gray-400">PERMANENT</span>
+            </div>
+
+            <div class="flex flex-col gap-2.5 font-silk text-[10px]">
+              <div class="bg-black/50 p-2 border border-arcade-mint/30 flex justify-between items-center">
+                <span>🛡 Team Captain Aura</span>
+                <span class="text-arcade-mint font-pixel">+18 LEAD</span>
+              </div>
+              <div class="bg-black/50 p-2 border border-arcade-mint/30 flex justify-between items-center">
+                <span>⚡ High-Pressure Clutch</span>
+                <span class="text-arcade-mint font-pixel">+25 SPD</span>
+              </div>
+              <div class="bg-black/50 p-2 border border-arcade-mint/30 flex justify-between items-center">
+                <span>🗣 Clear Signal Beacon</span>
+                <span class="text-arcade-mint font-pixel">+20 COMM</span>
+              </div>
+              <div class="bg-black/50 p-2 border border-arcade-mint/30 flex justify-between items-center">
+                <span>🧪 Rapid R&D Synthesizer</span>
+                <span class="text-arcade-mint font-pixel">+30 EXP</span>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Center Column: Pink Dual-Screen Handheld Console (Nintendo DS Style) -->
+        <div class="lg:col-span-6 flex justify-center">
+          
+          <!-- Outer Pink Handheld Shell -->
+          <div class="w-full max-w-md bg-gradient-to-b from-[#ff2a85] via-[#e61a73] to-[#b30e54] p-5 rounded-2xl border-4 border-black shadow-[8px_8px_0_#000] relative">
+            
+            <!-- Metallic Screws in corners -->
+            <div class="absolute top-2 left-2 w-2 h-2 rounded-full bg-gray-400 border border-black"></div>
+            <div class="absolute top-2 right-2 w-2 h-2 rounded-full bg-gray-400 border border-black"></div>
+            <div class="absolute bottom-2 left-2 w-2 h-2 rounded-full bg-gray-400 border border-black"></div>
+            <div class="absolute bottom-2 right-2 w-2 h-2 rounded-full bg-gray-400 border border-black"></div>
+
+            <!-- TOP SCREEN BEZEL -->
+            <div class="bg-[#120a1e] p-3 rounded-lg border-4 border-black shadow-inner mb-3">
+              <!-- Top Bezel Accents: Stereo Speakers & Camera/Mic -->
+              <div class="flex items-center justify-between px-2 mb-2">
+                <div class="flex gap-1">
+                  <span class="w-1.5 h-1.5 rounded-full bg-black"></span>
+                  <span class="w-1.5 h-1.5 rounded-full bg-black"></span>
+                  <span class="w-1.5 h-1.5 rounded-full bg-black"></span>
+                </div>
+                <div class="flex items-center gap-1.5">
+                  <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse border border-black"></span>
+                  <span class="text-[8px] font-silk text-emerald-400">POWER</span>
+                </div>
+                <div class="flex gap-1">
+                  <span class="w-1.5 h-1.5 rounded-full bg-black"></span>
+                  <span class="w-1.5 h-1.5 rounded-full bg-black"></span>
+                  <span class="w-1.5 h-1.5 rounded-full bg-black"></span>
+                </div>
+              </div>
+
+              <!-- Top LCD Display: Character Avatar & Base Stats -->
+              <div class="bg-[#0a0514] border-2 border-[#ff2a85]/60 p-3 relative overflow-hidden">
+                <div class="flex items-center gap-3">
+                  <!-- Pixel Avatar Frame -->
+                  <div class="w-16 h-16 sm:w-20 sm:h-20 bg-arcade-surface border-2 border-arcade-cyan p-1 shrink-0 flex items-center justify-center relative">
+                    <!-- Retro 8-bit Character SVG -->
+                    <svg viewBox="0 0 16 16" class="w-full h-full" shape-rendering="crispEdges">
+                      <!-- Hair -->
+                      <rect x="4" y="1" width="8" height="3" fill="#3b1d11"/>
+                      <rect x="3" y="2" width="10" height="2" fill="#3b1d11"/>
+                      <!-- Face -->
+                      <rect x="4" y="4" width="8" height="6" fill="#f8b090"/>
+                      <!-- Eyes (moving animation) -->
+                      <rect x="5" y="6" width="2" height="2" fill="#00e5ff"/>
+                      <rect x="9" y="6" width="2" height="2" fill="#00e5ff"/>
+                      <rect x="6" y="6" width="1" height="1" fill="#000"/>
+                      <rect x="10" y="6" width="1" height="1" fill="#000"/>
+                      <!-- Smile -->
+                      <rect x="7" y="8" width="2" height="1" fill="#8b3030"/>
+                      <!-- Headband -->
+                      <rect x="3" y="3" width="10" height="1" fill="#ff2a85"/>
+                      <!-- Body / Barca Jersey -->
+                      <rect x="4" y="10" width="8" height="6" fill="#004d98"/>
+                      <rect x="6" y="10" width="2" height="6" fill="#a50044"/>
+                      <rect x="10" y="10" width="1" height="6" fill="#a50044"/>
+                      <!-- Gold Medallion -->
+                      <rect x="7" y="12" width="2" height="2" fill="#edbb00"/>
+                    </svg>
+                    <span class="absolute -bottom-1 -right-1 bg-arcade-pink text-black font-pixel text-[7px] px-1">LVL 99</span>
+                  </div>
+
+                  <!-- Character Stats Breakdown -->
+                  <div class="flex-1 font-silk text-[9px] text-gray-200 space-y-1">
+                    <div class="flex justify-between border-b border-gray-800 pb-0.5">
+                      <span class="text-arcade-pink font-bold">NAME:</span>
+                      <span class="text-white">SHMAH / DEV_01</span>
+                    </div>
+                    <div class="flex justify-between">
+                      <span class="text-arcade-cyan">STR (Back-End):</span>
+                      <span class="text-white font-pixel text-[8px]">92 / 100</span>
+                    </div>
+                    <div class="flex justify-between">
+                      <span class="text-arcade-mint">DEX (Front-End):</span>
+                      <span class="text-white font-pixel text-[8px]">96 / 100</span>
+                    </div>
+                    <div class="flex justify-between">
+                      <span class="text-arcade-gold">INT (AI / Logic):</span>
+                      <span class="text-white font-pixel text-[8px]">94 / 100</span>
+                    </div>
+                    <div class="flex justify-between">
+                      <span class="text-purple-400">VIT (Debugging):</span>
+                      <span class="text-white font-pixel text-[8px]">90 / 100</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="mt-2 pt-1 border-t border-gray-800 flex justify-between items-center text-[8px] font-silk">
+                  <span class="text-gray-400">CLASS: SPORTS-TECH WARLOCK</span>
+                  <span class="text-arcade-mint animate-pulse">STATUS: ONLINE</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Handheld Hinge / Middle Section -->
+            <div class="flex items-center justify-between px-6 py-1 bg-[#800b3c] rounded border-y-2 border-black my-1">
+              <div class="w-8 h-1 bg-black rounded"></div>
+              <span class="text-[8px] font-pixel text-pink-300 tracking-widest">NINTENDO DS // DUAL-SYS</span>
+              <div class="w-8 h-1 bg-black rounded"></div>
+            </div>
+
+            <!-- BOTTOM SCREEN BEZEL & INTERACTIVE TOUCH SCREEN -->
+            <div class="bg-[#120a1e] p-3 rounded-lg border-4 border-black shadow-inner">
+              
+              <!-- Bottom LCD (Touchscreen) with Tabs -->
+              <div class="bg-[#0e071c] border-2 border-arcade-mint/60 p-2.5 min-h-[170px] flex flex-col justify-between">
+                
+                <!-- Screen Content Area (Controlled by Tabs) -->
+                <div id="ds-screen-content" class="font-silk text-xs leading-relaxed text-gray-200">
+                  <div class="text-arcade-mint font-pixel text-[10px] mb-1.5 flex items-center justify-between">
+                    <span>&gt; MISSION BRIEFING</span>
+                    <span class="text-[8px] text-gray-400">TAB 1/3</span>
+                  </div>
+                  <p class="text-[10px] text-gray-300 leading-normal">
+                    Driven by crafting clean codebases and competitive sports algorithms. Whether deploying low-latency telemetry pipelines or engineering responsive UI experiences, every line is treated like a championship final.
+                  </p>
+                  <div class="mt-2 p-1.5 bg-black/60 border border-arcade-pink text-arcade-pink text-[9px] font-pixel">
+                    MOTTO: "Tiki-taka coding with Formula 1 speed."
+                  </div>
+                </div>
+
+                <!-- Bottom Screen Tabs (Touch buttons) -->
+                <div class="grid grid-cols-3 gap-1 pt-2 border-t border-arcade-surface mt-2 font-pixel text-[8px]">
+                  <button id="ds-tab-bio" class="ds-tab-btn bg-arcade-pink text-black py-1 px-1 text-center font-bold border border-black hover:opacity-90">
+                    BIO
+                  </button>
+                  <button id="ds-tab-status" class="ds-tab-btn bg-arcade-surface text-gray-300 py-1 px-1 text-center border border-black hover:text-white">
+                    VITALS
+                  </button>
+                  <button id="ds-tab-gear" class="ds-tab-btn bg-arcade-surface text-gray-300 py-1 px-1 text-center border border-black hover:text-white">
+                    INVENTORY
+                  </button>
+                </div>
+
+              </div>
+
+              <!-- Handheld Controls: D-Pad & A/B/X/Y Buttons -->
+              <div class="flex items-center justify-between px-3 pt-3">
+                <!-- D-Pad -->
+                <div class="relative w-16 h-16">
+                  <!-- D-Pad Cross -->
+                  <button id="dpad-up" class="dpad-btn absolute top-0 left-5 w-6 h-6 bg-gray-900 border border-black hover:bg-gray-700 active:bg-arcade-pink flex items-center justify-center text-[8px] text-gray-400">▲</button>
+                  <button id="dpad-down" class="dpad-btn absolute bottom-0 left-5 w-6 h-6 bg-gray-900 border border-black hover:bg-gray-700 active:bg-arcade-pink flex items-center justify-center text-[8px] text-gray-400">▼</button>
+                  <button id="dpad-left" class="dpad-btn absolute top-5 left-0 w-6 h-6 bg-gray-900 border border-black hover:bg-gray-700 active:bg-arcade-pink flex items-center justify-center text-[8px] text-gray-400">◀</button>
+                  <button id="dpad-right" class="dpad-btn absolute top-5 right-0 w-6 h-6 bg-gray-900 border border-black hover:bg-gray-700 active:bg-arcade-pink flex items-center justify-center text-[8px] text-gray-400">▶</button>
+                  <div class="absolute top-5 left-5 w-6 h-6 bg-gray-800"></div>
+                </div>
+
+                <!-- Select / Start buttons in center -->
+                <div class="flex flex-col gap-1 items-center">
+                  <div class="flex gap-2">
+                    <button id="btn-select" class="w-6 h-2 bg-gray-800 rounded-sm border border-black hover:bg-gray-600 active:scale-95" title="Select"></button>
+                    <button id="btn-start" class="w-6 h-2 bg-gray-800 rounded-sm border border-black hover:bg-gray-600 active:scale-95" title="Start"></button>
+                  </div>
+                  <div class="flex gap-2 text-[7px] font-silk text-pink-300">
+                    <span>SELECT</span>
+                    <span>START</span>
+                  </div>
+                </div>
+
+                <!-- A B X Y Diamond -->
+                <div class="relative w-16 h-16">
+                  <button id="btn-x" class="abxy-btn absolute top-0 left-5 w-5 h-5 rounded-full bg-arcade-cyan text-black font-bold border border-black flex items-center justify-center text-[8px] shadow hover:scale-105 active:scale-90">X</button>
+                  <button id="btn-b" class="abxy-btn absolute bottom-0 left-5 w-5 h-5 rounded-full bg-arcade-gold text-black font-bold border border-black flex items-center justify-center text-[8px] shadow hover:scale-105 active:scale-90">B</button>
+                  <button id="btn-y" class="abxy-btn absolute top-5 left-0 w-5 h-5 rounded-full bg-arcade-mint text-black font-bold border border-black flex items-center justify-center text-[8px] shadow hover:scale-105 active:scale-90">Y</button>
+                  <button id="btn-a" class="abxy-btn absolute top-5 right-0 w-5 h-5 rounded-full bg-arcade-pink text-black font-bold border border-black flex items-center justify-center text-[8px] shadow hover:scale-105 active:scale-90">A</button>
+                </div>
+              </div>
+
+            </div>
+
+          </div>
+
+        </div>
+
+        <!-- Right Column: Weapons Mastery (Tech Stack) -->
+        <div class="lg:col-span-3 flex flex-col gap-6">
+          
+          <div class="pixel-box bg-arcade-surface p-4 border-2 border-arcade-cyan">
+            <div class="flex items-center justify-between border-b-2 border-arcade-deep pb-2 mb-3">
+              <div class="flex items-center gap-2">
+                <span class="text-arcade-cyan">⚔</span>
+                <span class="text-arcade-cyan font-bold text-[10px]">WEAPONS MASTERY</span>
+              </div>
+              <span class="text-[8px] text-gray-400">ARSENAL</span>
+            </div>
+
+            <!-- Weapons List -->
+            <div class="space-y-3 font-silk">
+              
+              <!-- Weapon 1 -->
+              <div>
+                <div class="flex justify-between text-[10px] mb-1">
+                  <span class="text-white font-bold">🗡 React & Next.js</span>
+                  <span class="text-arcade-mint font-pixel text-[8px]">LVL 99</span>
+                </div>
+                <div class="w-full bg-black h-2 border border-arcade-mint/50 p-0.5">
+                  <div class="bg-arcade-mint h-full w-[98%]"></div>
+                </div>
+                <div class="text-[8px] text-gray-400 mt-0.5">Mana Cost: Low | SSR / App Router</div>
+              </div>
+
+              <!-- Weapon 2 -->
+              <div>
+                <div class="flex justify-between text-[10px] mb-1">
+                  <span class="text-white font-bold">🏹 TypeScript & ES6+</span>
+                  <span class="text-arcade-cyan font-pixel text-[8px]">LVL 95</span>
+                </div>
+                <div class="w-full bg-black h-2 border border-arcade-cyan/50 p-0.5">
+                  <div class="bg-arcade-cyan h-full w-[94%]"></div>
+                </div>
+                <div class="text-[8px] text-gray-400 mt-0.5">Type-Safe Armor | Zero Runtime Bugs</div>
+              </div>
+
+              <!-- Weapon 3 -->
+              <div>
+                <div class="flex justify-between text-[10px] mb-1">
+                  <span class="text-white font-bold">🔮 Python & PyTorch</span>
+                  <span class="text-arcade-pink font-pixel text-[8px]">LVL 90</span>
+                </div>
+                <div class="w-full bg-black h-2 border border-arcade-pink/50 p-0.5">
+                  <div class="bg-arcade-pink h-full w-[90%]"></div>
+                </div>
+                <div class="text-[8px] text-gray-400 mt-0.5">Machine Vision & LLM Orchestration</div>
+              </div>
+
+              <!-- Weapon 4 -->
+              <div>
+                <div class="flex justify-between text-[10px] mb-1">
+                  <span class="text-white font-bold">🛡 Node.js & FastAPI</span>
+                  <span class="text-arcade-gold font-pixel text-[8px]">LVL 92</span>
+                </div>
+                <div class="w-full bg-black h-2 border border-arcade-gold/50 p-0.5">
+                  <div class="bg-arcade-gold h-full w-[91%]"></div>
+                </div>
+                <div class="text-[8px] text-gray-400 mt-0.5">High-Concurrency WebSockets & Microservices</div>
+              </div>
+
+              <!-- Weapon 5 -->
+              <div>
+                <div class="flex justify-between text-[10px] mb-1">
+                  <span class="text-white font-bold">📦 Docker, AWS & SQL</span>
+                  <span class="text-purple-400 font-pixel text-[8px]">LVL 88</span>
+                </div>
+                <div class="w-full bg-black h-2 border border-purple-400/50 p-0.5">
+                  <div class="bg-purple-400 h-full w-[87%]"></div>
+                </div>
+                <div class="text-[8px] text-gray-400 mt-0.5">Cloud Invocations & Scaled Containers</div>
+              </div>
+
+            </div>
+          </div>
+
+          <!-- Quick Tip Banner -->
+          <div class="bg-arcade-deep border border-dashed border-arcade-pink/60 p-3 text-[9px] font-silk text-gray-300">
+            <span class="text-arcade-pink font-pixel block mb-1">💡 PRO TIP:</span>
+            Click on the D-Pad or A/B/X/Y buttons on the Nintendo DS console to hear retro sound synthesizer tones!
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ======================================================== -->
+  <!-- LEVEL 02: PROJECTS / QUESTS (RETRO CARTRIDGE SHOWCASE)   -->
+  <!-- ======================================================== -->
+  <section id="projects" class="relative py-20 px-4 z-10 bg-arcade-deep/50 border-y-4 border-arcade-surface">
+    <div class="max-w-6xl mx-auto">
+      
+      <!-- Section Title & Filter Buttons -->
+      <div class="flex flex-col items-center text-center mb-12">
+        <div class="inline-flex items-center gap-2 bg-arcade-surface px-3 py-1 border-2 border-arcade-mint text-arcade-mint text-[10px] mb-3">
+          <span>LEVEL 02</span>
+          <span>//</span>
+          <span>QUEST ARCHIVES</span>
+        </div>
+        <h2 class="text-2xl sm:text-3xl font-bold text-white tracking-wide">
+          SELECT YOUR CARTRIDGE
+        </h2>
+        <p class="font-vt text-xl sm:text-2xl text-arcade-cyan mt-1">
+          Legendary code releases, boss battles conquered, and interactive demos
+        </p>
+
+        <!-- Category Filters -->
+        <div class="flex flex-wrap justify-center gap-2 mt-6 font-pixel text-[9px]">
+          <button class="filter-btn pixel-btn bg-arcade-pink text-black px-3 py-2 font-bold" data-filter="all">
+            ALL QUESTS (6)
+          </button>
+          <button class="filter-btn pixel-btn bg-arcade-surface hover:bg-arcade-pink hover:text-black text-white px-3 py-2" data-filter="sports">
+            ⚽ SPORTS TECH
+          </button>
+          <button class="filter-btn pixel-btn bg-arcade-surface hover:bg-arcade-pink hover:text-black text-white px-3 py-2" data-filter="fullstack">
+            ⚡ FULL-STACK
+          </button>
+          <button class="filter-btn pixel-btn bg-arcade-surface hover:bg-arcade-pink hover:text-black text-white px-3 py-2" data-filter="ai">
+            🧠 AI & DATA
+          </button>
+        </div>
+      </div>
+
+      <!-- Cartridge Grid -->
+      <div id="projects-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        
+        <!-- Cartridge 1: Barça Analytics -->
+        <div class="project-card cartridge-card relative bg-[#2a1745] p-3 border-4 border-black shadow-[6px_6px_0_#000]" data-category="sports ai">
+          <!-- Cartridge Top Grips & Notch -->
+          <div class="flex justify-between items-center bg-[#1c0f2f] px-4 py-1.5 border-2 border-black mb-3">
+            <div class="flex gap-1">
+              <span class="w-6 h-1 bg-black/70 block"></span>
+              <span class="w-6 h-1 bg-black/70 block"></span>
+              <span class="w-6 h-1 bg-black/70 block"></span>
+            </div>
+            <span class="text-[8px] font-silk text-arcade-gold">BARCA-SPORTS-01</span>
+          </div>
+
+          <!-- Cartridge Sticker / Art -->
+          <div class="bg-black border-2 border-black p-2 relative overflow-hidden mb-3">
+            <div class="h-36 bg-gradient-to-br from-arcade-barcaGarnet via-arcade-barcaBlue to-black p-3 flex flex-col justify-between relative">
+              <div class="flex justify-between items-start">
+                <span class="bg-black/70 text-arcade-gold font-pixel text-[8px] px-1.5 py-0.5 border border-arcade-gold">SPORTS TECH</span>
+                <span class="text-[9px] text-emerald-400 font-pixel">★ BOSS LVL 95</span>
+              </div>
+              <div>
+                <div class="font-pixel text-xs text-white drop-shadow-[2px_2px_0_#000]">CAMP NOU ANALYTICS</div>
+                <div class="font-silk text-[9px] text-yellow-300">Real-Time Pitch Telemetry Engine</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Description & Tech -->
+          <div class="font-silk text-xs px-1 text-gray-300 space-y-2">
+            <p class="text-[10px] leading-relaxed">
+              Computer-vision powered match analytics system tracking player spatial velocity, pass likelihood probability, and expected goals (xG) heatmaps in under 40ms.
+            </p>
+            <div class="flex flex-wrap gap-1 text-[8px] font-pixel text-arcade-cyan">
+              <span class="bg-black px-1.5 py-0.5 border border-arcade-cyan/30">Next.js 14</span>
+              <span class="bg-black px-1.5 py-0.5 border border-arcade-cyan/30">Python / OpenCV</span>
+              <span class="bg-black px-1.5 py-0.5 border border-arcade-cyan/30">WebSockets</span>
+            </div>
+          </div>
+
+          <!-- Action Links -->
+          <div class="flex items-center justify-between border-t border-black/40 mt-3 pt-3">
+            <a href="https://github.com" target="_blank" rel="noopener noreferrer" class="pixel-btn bg-black hover:bg-gray-800 text-white px-2.5 py-1 text-[8px] flex items-center gap-1">
+              <span>💾 GITHUB</span>
+            </a>
+            <a href="#hero" class="pixel-btn bg-arcade-mint text-black font-bold px-2.5 py-1 text-[8px] flex items-center gap-1">
+              <span>▶ PLAY DEMO</span>
+            </a>
+          </div>
+        </div>
+
+        <!-- Cartridge 2: Apex F1 Telemetry -->
+        <div class="project-card cartridge-card relative bg-[#2a1745] p-3 border-4 border-black shadow-[6px_6px_0_#000]" data-category="sports fullstack">
+          <!-- Cartridge Top Grips -->
+          <div class="flex justify-between items-center bg-[#1c0f2f] px-4 py-1.5 border-2 border-black mb-3">
+            <div class="flex gap-1">
+              <span class="w-6 h-1 bg-black/70 block"></span>
+              <span class="w-6 h-1 bg-black/70 block"></span>
+              <span class="w-6 h-1 bg-black/70 block"></span>
+            </div>
+            <span class="text-[8px] font-silk text-arcade-pink">APEX-F1-02</span>
+          </div>
+
+          <!-- Cartridge Sticker -->
+          <div class="bg-black border-2 border-black p-2 relative overflow-hidden mb-3">
+            <div class="h-36 bg-gradient-to-br from-red-800 via-gray-900 to-black p-3 flex flex-col justify-between relative">
+              <div class="flex justify-between items-start">
+                <span class="bg-black/70 text-red-400 font-pixel text-[8px] px-1.5 py-0.5 border border-red-500">F1 TELEMETRY</span>
+                <span class="text-[9px] text-arcade-cyan font-pixel">★ BOSS LVL 90</span>
+              </div>
+              <div>
+                <div class="font-pixel text-xs text-white drop-shadow-[2px_2px_0_#000]">APEX PIT WALL</div>
+                <div class="font-silk text-[9px] text-red-300">Live Delta & Throttle Telemetry</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Description & Tech -->
+          <div class="font-silk text-xs px-1 text-gray-300 space-y-2">
+            <p class="text-[10px] leading-relaxed">
+              Formula 1 telemetry dashboard displaying throttle, braking traces, tire degradation curves, and real-time gap sector deltas for racing engineers.
+            </p>
+            <div class="flex flex-wrap gap-1 text-[8px] font-pixel text-arcade-pink">
+              <span class="bg-black px-1.5 py-0.5 border border-arcade-pink/30">React 18</span>
+              <span class="bg-black px-1.5 py-0.5 border border-arcade-pink/30">FastAPI</span>
+              <span class="bg-black px-1.5 py-0.5 border border-arcade-pink/30">Canvas API</span>
+            </div>
+          </div>
+
+          <!-- Action Links -->
+          <div class="flex items-center justify-between border-t border-black/40 mt-3 pt-3">
+            <a href="https://github.com" target="_blank" rel="noopener noreferrer" class="pixel-btn bg-black hover:bg-gray-800 text-white px-2.5 py-1 text-[8px]">
+              <span>💾 GITHUB</span>
+            </a>
+            <a href="#arcade" class="pixel-btn bg-arcade-pink text-black font-bold px-2.5 py-1 text-[8px]">
+              <span>▶ RUN SIM</span>
+            </a>
+          </div>
+        </div>
+
+        <!-- Cartridge 3: NeuroScribe AI Engine -->
+        <div class="project-card cartridge-card relative bg-[#2a1745] p-3 border-4 border-black shadow-[6px_6px_0_#000]" data-category="ai fullstack">
+          <!-- Cartridge Top Grips -->
+          <div class="flex justify-between items-center bg-[#1c0f2f] px-4 py-1.5 border-2 border-black mb-3">
+            <div class="flex gap-1">
+              <span class="w-6 h-1 bg-black/70 block"></span>
+              <span class="w-6 h-1 bg-black/70 block"></span>
+              <span class="w-6 h-1 bg-black/70 block"></span>
+            </div>
+            <span class="text-[8px] font-silk text-arcade-cyan">NEURO-AI-03</span>
+          </div>
+
+          <!-- Cartridge Sticker -->
+          <div class="bg-black border-2 border-black p-2 relative overflow-hidden mb-3">
+            <div class="h-36 bg-gradient-to-br from-indigo-900 via-purple-950 to-black p-3 flex flex-col justify-between relative">
+              <div class="flex justify-between items-start">
+                <span class="bg-black/70 text-arcade-cyan font-pixel text-[8px] px-1.5 py-0.5 border border-arcade-cyan">AI & RAG</span>
+                <span class="text-[9px] text-arcade-gold font-pixel">★ BOSS LVL 98</span>
+              </div>
+              <div>
+                <div class="font-pixel text-xs text-white drop-shadow-[2px_2px_0_#000]">NEUROSCRIBE AI</div>
+                <div class="font-silk text-[9px] text-cyan-300">Code Synthesis & Context Orchestrator</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Description & Tech -->
+          <div class="font-silk text-xs px-1 text-gray-300 space-y-2">
+            <p class="text-[10px] leading-relaxed">
+              Multi-agent reasoning engine and local RAG code copilot utilizing vector embeddings for sub-second semantic search across 50,000+ source lines.
+            </p>
+            <div class="flex flex-wrap gap-1 text-[8px] font-pixel text-arcade-mint">
+              <span class="bg-black px-1.5 py-0.5 border border-arcade-mint/30">PyTorch</span>
+              <span class="bg-black px-1.5 py-0.5 border border-arcade-mint/30">ChromaDB</span>
+              <span class="bg-black px-1.5 py-0.5 border border-arcade-mint/30">Node.js</span>
+            </div>
+          </div>
+
+          <!-- Action Links -->
+          <div class="flex items-center justify-between border-t border-black/40 mt-3 pt-3">
+            <a href="https://github.com" target="_blank" rel="noopener noreferrer" class="pixel-btn bg-black hover:bg-gray-800 text-white px-2.5 py-1 text-[8px]">
+              <span>💾 GITHUB</span>
+            </a>
+            <a href="#contact" class="pixel-btn bg-arcade-cyan text-black font-bold px-2.5 py-1 text-[8px]">
+              <span>▶ REPO BRIEF</span>
+            </a>
+          </div>
+        </div>
+
+        <!-- Cartridge 4: RetroArcade Multiplayer -->
+        <div class="project-card cartridge-card relative bg-[#2a1745] p-3 border-4 border-black shadow-[6px_6px_0_#000]" data-category="fullstack">
+          <!-- Cartridge Top Grips -->
+          <div class="flex justify-between items-center bg-[#1c0f2f] px-4 py-1.5 border-2 border-black mb-3">
+            <div class="flex gap-1">
+              <span class="w-6 h-1 bg-black/70 block"></span>
+              <span class="w-6 h-1 bg-black/70 block"></span>
+              <span class="w-6 h-1 bg-black/70 block"></span>
+            </div>
+            <span class="text-[8px] font-silk text-arcade-mint">MULTI-NET-04</span>
+          </div>
+
+          <!-- Cartridge Sticker -->
+          <div class="bg-black border-2 border-black p-2 relative overflow-hidden mb-3">
+            <div class="h-36 bg-gradient-to-br from-emerald-900 via-teal-950 to-black p-3 flex flex-col justify-between relative">
+              <div class="flex justify-between items-start">
+                <span class="bg-black/70 text-arcade-mint font-pixel text-[8px] px-1.5 py-0.5 border border-arcade-mint">FULL-STACK</span>
+                <span class="text-[9px] text-arcade-pink font-pixel">★ BOSS LVL 88</span>
+              </div>
+              <div>
+                <div class="font-pixel text-xs text-white drop-shadow-[2px_2px_0_#000]">RETRO MULTIPLAYER</div>
+                <div class="font-silk text-[9px] text-emerald-300">WebSockets Arcade Lobby</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Description & Tech -->
+          <div class="font-silk text-xs px-1 text-gray-300 space-y-2">
+            <p class="text-[10px] leading-relaxed">
+              Low-latency browser arcade platform with server-authoritative state reconciliation, room matchmaking, and 60 FPS Canvas game loops.
+            </p>
+            <div class="flex flex-wrap gap-1 text-[8px] font-pixel text-arcade-gold">
+              <span class="bg-black px-1.5 py-0.5 border border-arcade-gold/30">TypeScript</span>
+              <span class="bg-black px-1.5 py-0.5 border border-arcade-gold/30">Socket.io</span>
+              <span class="bg-black px-1.5 py-0.5 border border-arcade-gold/30">Redis</span>
+            </div>
+          </div>
+
+          <!-- Action Links -->
+          <div class="flex items-center justify-between border-t border-black/40 mt-3 pt-3">
+            <a href="https://github.com" target="_blank" rel="noopener noreferrer" class="pixel-btn bg-black hover:bg-gray-800 text-white px-2.5 py-1 text-[8px]">
+              <span>💾 GITHUB</span>
+            </a>
+            <a href="#about" class="pixel-btn bg-arcade-gold text-black font-bold px-2.5 py-1 text-[8px]">
+              <span>▶ LOBBY DEMO</span>
+            </a>
+          </div>
+        </div>
+
+        <!-- Cartridge 5: PixelCraft UI Component System -->
+        <div class="project-card cartridge-card relative bg-[#2a1745] p-3 border-4 border-black shadow-[6px_6px_0_#000]" data-category="fullstack">
+          <!-- Cartridge Top Grips -->
+          <div class="flex justify-between items-center bg-[#1c0f2f] px-4 py-1.5 border-2 border-black mb-3">
+            <div class="flex gap-1">
+              <span class="w-6 h-1 bg-black/70 block"></span>
+              <span class="w-6 h-1 bg-black/70 block"></span>
+              <span class="w-6 h-1 bg-black/70 block"></span>
+            </div>
+            <span class="text-[8px] font-silk text-yellow-400">DESIGN-SYS-05</span>
+          </div>
+
+          <!-- Cartridge Sticker -->
+          <div class="bg-black border-2 border-black p-2 relative overflow-hidden mb-3">
+            <div class="h-36 bg-gradient-to-br from-pink-900 via-rose-950 to-black p-3 flex flex-col justify-between relative">
+              <div class="flex justify-between items-start">
+                <span class="bg-black/70 text-pink-300 font-pixel text-[8px] px-1.5 py-0.5 border border-pink-400">UI SYSTEM</span>
+                <span class="text-[9px] text-arcade-mint font-pixel">★ BOSS LVL 85</span>
+              </div>
+              <div>
+                <div class="font-pixel text-xs text-white drop-shadow-[2px_2px_0_#000]">PIXELCRAFT UI</div>
+                <div class="font-silk text-[9px] text-pink-200">8-Bit Accessible Components</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Description & Tech -->
+          <div class="font-silk text-xs px-1 text-gray-300 space-y-2">
+            <p class="text-[10px] leading-relaxed">
+              Open-source retro component design library featuring accessible keyboard navigation, CSS pixel shaders, and integrated Web Audio feedback sound effects.
+            </p>
+            <div class="flex flex-wrap gap-1 text-[8px] font-pixel text-arcade-cyan">
+              <span class="bg-black px-1.5 py-0.5 border border-arcade-cyan/30">Tailwind CSS</span>
+              <span class="bg-black px-1.5 py-0.5 border border-arcade-cyan/30">Web Audio</span>
+              <span class="bg-black px-1.5 py-0.5 border border-arcade-cyan/30">React</span>
+            </div>
+          </div>
+
+          <!-- Action Links -->
+          <div class="flex items-center justify-between border-t border-black/40 mt-3 pt-3">
+            <a href="https://github.com" target="_blank" rel="noopener noreferrer" class="pixel-btn bg-black hover:bg-gray-800 text-white px-2.5 py-1 text-[8px]">
+              <span>💾 GITHUB</span>
+            </a>
+            <a href="#hero" class="pixel-btn bg-arcade-pink text-black font-bold px-2.5 py-1 text-[8px]">
+              <span>▶ DOCS</span>
+            </a>
+          </div>
+        </div>
+
+        <!-- Cartridge 6: AlgoQuant Event-Driven Engine -->
+        <div class="project-card cartridge-card relative bg-[#2a1745] p-3 border-4 border-black shadow-[6px_6px_0_#000]" data-category="ai">
+          <!-- Cartridge Top Grips -->
+          <div class="flex justify-between items-center bg-[#1c0f2f] px-4 py-1.5 border-2 border-black mb-3">
+            <div class="flex gap-1">
+              <span class="w-6 h-1 bg-black/70 block"></span>
+              <span class="w-6 h-1 bg-black/70 block"></span>
+              <span class="w-6 h-1 bg-black/70 block"></span>
+            </div>
+            <span class="text-[8px] font-silk text-green-400">QUANT-SIM-06</span>
+          </div>
+
+          <!-- Cartridge Sticker -->
+          <div class="bg-black border-2 border-black p-2 relative overflow-hidden mb-3">
+            <div class="h-36 bg-gradient-to-br from-amber-950 via-yellow-950 to-black p-3 flex flex-col justify-between relative">
+              <div class="flex justify-between items-start">
+                <span class="bg-black/70 text-arcade-gold font-pixel text-[8px] px-1.5 py-0.5 border border-arcade-gold">QUANT AI</span>
+                <span class="text-[9px] text-arcade-cyan font-pixel">★ BOSS LVL 94</span>
+              </div>
+              <div>
+                <div class="font-pixel text-xs text-white drop-shadow-[2px_2px_0_#000]">ALGOQUANT SIM</div>
+                <div class="font-silk text-[9px] text-amber-200">High-Frequency Backtester</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Description & Tech -->
+          <div class="font-silk text-xs px-1 text-gray-300 space-y-2">
+            <p class="text-[10px] leading-relaxed">
+              Event-driven simulation framework executing algorithmic strategies across historical market order books with slippage models and risk bounds.
+            </p>
+            <div class="flex flex-wrap gap-1 text-[8px] font-pixel text-arcade-gold">
+              <span class="bg-black px-1.5 py-0.5 border border-arcade-gold/30">Python 3.11</span>
+              <span class="bg-black px-1.5 py-0.5 border border-arcade-gold/30">NumPy / Pandas</span>
+              <span class="bg-black px-1.5 py-0.5 border border-arcade-gold/30">Docker</span>
+            </div>
+          </div>
+
+          <!-- Action Links -->
+          <div class="flex items-center justify-between border-t border-black/40 mt-3 pt-3">
+            <a href="https://github.com" target="_blank" rel="noopener noreferrer" class="pixel-btn bg-black hover:bg-gray-800 text-white px-2.5 py-1 text-[8px]">
+              <span>💾 GITHUB</span>
+            </a>
+            <a href="#pitwall" class="pixel-btn bg-arcade-gold text-black font-bold px-2.5 py-1 text-[8px]">
+              <span>▶ REPORT</span>
+            </a>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ======================================================== -->
+  <!-- THE PIT WALL / GARAGE: IN-PROGRESS BUILDS & TELEMETRY    -->
+  <!-- ======================================================== -->
+  <section id="pitwall" class="relative py-20 px-4 z-10">
+    <div class="max-w-6xl mx-auto">
+      
+      <!-- Section Header -->
+      <div class="text-center mb-14">
+        <div class="inline-flex items-center gap-2 bg-arcade-surface px-3 py-1 border-2 border-arcade-cyan text-arcade-cyan text-[10px] mb-3">
+          <span>THE PIT WALL // GARAGE</span>
+          <span>//</span>
+          <span>TELEMETRY & ROADMAP</span>
+        </div>
+        <h2 class="text-2xl sm:text-3xl font-bold text-white tracking-wide">
+          ACTIVE BUILDS ON THE LIFT
+        </h2>
+        <p class="font-vt text-xl sm:text-2xl text-arcade-pink mt-1">
+          Live development telemetry, tuning status, and next-season engineering upgrades
+        </p>
+      </div>
+
+      <!-- Garage Telemetry Grid -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+        
+        <!-- Left: In-Progress Builds with Retro EXP Bars -->
+        <div class="lg:col-span-7 flex flex-col gap-5">
+          
+          <div class="pixel-box bg-arcade-surface p-5 border-2 border-arcade-cyan">
+            <div class="flex items-center justify-between border-b-2 border-arcade-deep pb-3 mb-4">
+              <div class="flex items-center gap-2">
+                <span class="w-3 h-3 bg-arcade-cyan animate-pulse"></span>
+                <span class="text-arcade-cyan font-bold text-xs">IN-PROGRESS ENGINEERING BUILDS</span>
+              </div>
+              <span class="text-[9px] font-silk text-gray-400">TUNING STAGE</span>
+            </div>
+
+            <div class="space-y-5 font-silk">
+              
+              <!-- Build 1 -->
+              <div>
+                <div class="flex justify-between items-center text-xs mb-1.5">
+                  <span class="text-white font-bold flex items-center gap-1.5">
+                    <span class="text-arcade-gold">⚡</span> Vision-Based Ball Tracking SDK
+                  </span>
+                  <span class="text-arcade-mint font-pixel text-[9px]">EXP [ 84% ]</span>
+                </div>
+                <div class="w-full bg-black h-3.5 border-2 border-arcade-mint p-0.5">
+                  <div class="bg-gradient-to-r from-arcade-mint to-emerald-400 h-full w-[84%]"></div>
+                </div>
+                <div class="flex justify-between text-[9px] text-gray-400 mt-1">
+                  <span>Target: WebAssembly 60 FPS mobile tracker</span>
+                  <span class="text-arcade-mint">Sprint 4/5</span>
+                </div>
+              </div>
+
+              <!-- Build 2 -->
+              <div>
+                <div class="flex justify-between items-center text-xs mb-1.5">
+                  <span class="text-white font-bold flex items-center gap-1.5">
+                    <span class="text-arcade-pink">🏎</span> Real-Time F1 Telemetry Ingestion Gateway
+                  </span>
+                  <span class="text-arcade-pink font-pixel text-[9px]">EXP [ 68% ]</span>
+                </div>
+                <div class="w-full bg-black h-3.5 border-2 border-arcade-pink p-0.5">
+                  <div class="bg-gradient-to-r from-arcade-pink to-rose-400 h-full w-[68%]"></div>
+                </div>
+                <div class="flex justify-between text-[9px] text-gray-400 mt-1">
+                  <span>Target: Zero-allocation UDP packet decoder</span>
+                  <span class="text-arcade-pink">Sprint 3/5</span>
+                </div>
+              </div>
+
+              <!-- Build 3 -->
+              <div>
+                <div class="flex justify-between items-center text-xs mb-1.5">
+                  <span class="text-white font-bold flex items-center gap-1.5">
+                    <span class="text-arcade-cyan">🧠</span> Autonomous Multi-Agent Research Swarm
+                  </span>
+                  <span class="text-arcade-cyan font-pixel text-[9px]">EXP [ 48% ]</span>
+                </div>
+                <div class="w-full bg-black h-3.5 border-2 border-arcade-cyan p-0.5">
+                  <div class="bg-gradient-to-r from-arcade-cyan to-blue-400 h-full w-[48%]"></div>
+                </div>
+                <div class="flex justify-between text-[9px] text-gray-400 mt-1">
+                  <span>Target: Graph memory state persistence</span>
+                  <span class="text-arcade-cyan">Sprint 2/5</span>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+          <!-- Live Telemetry Ticker -->
+          <div class="pixel-box bg-arcade-deep p-4 border-2 border-arcade-gold font-silk text-xs">
+            <div class="text-arcade-gold font-pixel text-[9px] mb-2 flex items-center gap-2">
+              <span class="w-2 h-2 bg-arcade-gold inline-block animate-blink"></span>
+              PIT WALL RADIO COMMUNICATOR // LIVE LOGS
+            </div>
+            <div class="bg-black/80 p-3 font-vt text-lg sm:text-xl text-green-400 space-y-1">
+              <div>[RADIO] PIT: "Box this lap, box this lap. Fresh tires and deploy git tag v2.4.0."</div>
+              <div>[SYSTEM] Memory allocated: 128MB // Cache hit ratio: 98.4%</div>
+              <div class="text-yellow-400">[DELTA] Sector 1: -0.142s (Personal Best In Code Speed)</div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Right: Roadmap of Upcoming Builds -->
+        <div class="lg:col-span-5 flex flex-col gap-5">
+          
+          <div class="pixel-box bg-arcade-surface p-5 border-2 border-arcade-pink">
+            <div class="flex items-center justify-between border-b-2 border-arcade-deep pb-3 mb-4">
+              <div class="flex items-center gap-2">
+                <span class="text-arcade-pink">🛠</span>
+                <span class="text-arcade-pink font-bold text-xs">NEXT SEASON UPGRADES (ROADMAP)</span>
+              </div>
+              <span class="text-[8px] bg-arcade-pink text-black px-1.5 py-0.5 font-bold">2026 ROADMAP</span>
+            </div>
+
+            <div class="space-y-4 font-silk text-xs">
+              
+              <!-- Roadmap Item 1 -->
+              <div class="border-l-4 border-arcade-pink pl-3 py-1">
+                <div class="flex items-center justify-between">
+                  <span class="text-white font-bold">WebGPU 3D Stadium Shaders</span>
+                  <span class="text-[8px] font-pixel text-arcade-gold">Q1 2026</span>
+                </div>
+                <p class="text-[10px] text-gray-400 mt-1">
+                  Migrating 2D football trajectories into interactive 3D WebGPU volume rendering.
+                </p>
+              </div>
+
+              <!-- Roadmap Item 2 -->
+              <div class="border-l-4 border-arcade-cyan pl-3 py-1">
+                <div class="flex items-center justify-between">
+                  <span class="text-white font-bold">Rust WASM Performance Kernels</span>
+                  <span class="text-[8px] font-pixel text-arcade-cyan">Q2 2026</span>
+                </div>
+                <p class="text-[10px] text-gray-400 mt-1">
+                  Rewriting math-intensive telemetry calculation kernels in native Rust compiled to WebAssembly.
+                </p>
+              </div>
+
+              <!-- Roadmap Item 3 -->
+              <div class="border-l-4 border-arcade-mint pl-3 py-1">
+                <div class="flex items-center justify-between">
+                  <span class="text-white font-bold">Edge ONNX Neural Models</span>
+                  <span class="text-[8px] font-pixel text-arcade-mint">Q3 2026</span>
+                </div>
+                <p class="text-[10px] text-gray-400 mt-1">
+                  Local client-side computer vision inference for ball spin and trajectory prediction without server lag.
+                </p>
+              </div>
+
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ======================================================== -->
+  <!-- LEVEL 03: EXPERIENCE LOG (8-BIT QUEST TIMELINE)          -->
+  <!-- ======================================================== -->
+  <section id="experience" class="relative py-20 px-4 z-10 bg-arcade-deep/50 border-t-4 border-arcade-surface">
+    <div class="max-w-4xl mx-auto">
+      
+      <!-- Section Header -->
+      <div class="text-center mb-16">
+        <div class="inline-flex items-center gap-2 bg-arcade-surface px-3 py-1 border-2 border-arcade-gold text-arcade-gold text-[10px] mb-3">
+          <span>LEVEL 03</span>
+          <span>//</span>
+          <span>QUEST LOG</span>
+        </div>
+        <h2 class="text-2xl sm:text-3xl font-bold text-white tracking-wide">
+          CAREER DUNGEONS CONQUERED
+        </h2>
+        <p class="font-vt text-xl sm:text-2xl text-arcade-mint mt-1">
+          Leadership expeditions, technology internships, and collegiate hackathons
+        </p>
+      </div>
+
+      <!-- Vertical 8-Bit Quest Timeline -->
+      <div class="relative border-l-4 border-dashed border-arcade-purple pl-6 ml-4 sm:ml-8 space-y-12">
+        
+        <!-- Timeline Item 1 -->
+        <div class="relative group">
+          <!-- Checkpoint Marker Flag -->
+          <div class="absolute -left-[35px] top-1.5 w-6 h-6 bg-arcade-pink border-2 border-black flex items-center justify-center text-[10px] shadow-[2px_2px_0_#000]">
+            🚩
+          </div>
+
+          <!-- Card Content -->
+          <div class="pixel-box bg-arcade-surface p-5 border-2 border-arcade-pink">
+            <div class="flex flex-wrap items-center justify-between gap-2 border-b-2 border-arcade-deep pb-2 mb-3">
+              <div>
+                <span class="text-arcade-pink font-bold text-xs sm:text-sm">LEAD SOFTWARE ENGINEER INTERN</span>
+                <span class="text-white block font-silk text-xs">Apex Digital Systems // High-Throughput Cloud</span>
+              </div>
+              <div class="flex items-center gap-2 font-pixel text-[8px]">
+                <span class="bg-black text-arcade-mint px-2 py-1 border border-arcade-mint">+6,000 EXP</span>
+                <span class="text-gray-400">2024 - PRESENT</span>
+              </div>
+            </div>
+
+            <ul class="font-silk text-xs text-gray-300 space-y-2 list-disc list-inside">
+              <li>Architected and shipped event-driven microservices serving 1.5M+ monthly API requests with sub-80ms p99 response times.</li>
+              <li>Engineered real-time telemetry streaming pipelines leveraging Redis Pub/Sub, WebSockets, and optimized React virtual tables.</li>
+              <li>Spearheaded Dockerized automated CI/CD deployment pipelines on AWS, trimming release cycle latency by 45%.</li>
+            </ul>
+
+            <div class="flex flex-wrap gap-1.5 mt-3 pt-3 border-t border-black/40 text-[8px] font-pixel text-arcade-pink">
+              <span class="bg-black px-2 py-0.5">TypeScript</span>
+              <span class="bg-black px-2 py-0.5">Next.js</span>
+              <span class="bg-black px-2 py-0.5">FastAPI</span>
+              <span class="bg-black px-2 py-0.5">Docker</span>
+              <span class="bg-black px-2 py-0.5">Redis</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Timeline Item 2 -->
+        <div class="relative group">
+          <!-- Checkpoint Marker Flag -->
+          <div class="absolute -left-[35px] top-1.5 w-6 h-6 bg-arcade-gold border-2 border-black flex items-center justify-center text-[10px] shadow-[2px_2px_0_#000]">
+            👑
+          </div>
+
+          <!-- Card Content -->
+          <div class="pixel-box bg-arcade-surface p-5 border-2 border-arcade-gold">
+            <div class="flex flex-wrap items-center justify-between gap-2 border-b-2 border-arcade-deep pb-2 mb-3">
+              <div>
+                <span class="text-arcade-gold font-bold text-xs sm:text-sm">PRESIDENT & TECHNICAL CHIEF</span>
+                <span class="text-white block font-silk text-xs">University Computer Science & Robotics Society</span>
+              </div>
+              <div class="flex items-center gap-2 font-pixel text-[8px]">
+                <span class="bg-black text-arcade-gold px-2 py-1 border border-arcade-gold">+4,500 EXP</span>
+                <span class="text-gray-400">2023 - 2024</span>
+              </div>
+            </div>
+
+            <ul class="font-silk text-xs text-gray-300 space-y-2 list-disc list-inside">
+              <li>Directed society of 300+ student developers; organized 3 major collegiate hackathons with $15,000+ sponsor prize pools.</li>
+              <li>Conducted weekly hands-on workshops covering Full-Stack Web Development, Git mastery, and competitive algorithms.</li>
+              <li>Led collegiate team to 1st place in National Open-Source Hackathon against 120 competing engineering university squads.</li>
+            </ul>
+
+            <div class="flex flex-wrap gap-1.5 mt-3 pt-3 border-t border-black/40 text-[8px] font-pixel text-arcade-gold">
+              <span class="bg-black px-2 py-0.5">Leadership</span>
+              <span class="bg-black px-2 py-0.5">Hackathons</span>
+              <span class="bg-black px-2 py-0.5">Mentorship</span>
+              <span class="bg-black px-2 py-0.5">System Design</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Timeline Item 3 -->
+        <div class="relative group">
+          <!-- Checkpoint Marker Flag -->
+          <div class="absolute -left-[35px] top-1.5 w-6 h-6 bg-arcade-cyan border-2 border-black flex items-center justify-center text-[10px] shadow-[2px_2px_0_#000]">
+            ⚡
+          </div>
+
+          <!-- Card Content -->
+          <div class="pixel-box bg-arcade-surface p-5 border-2 border-arcade-cyan">
+            <div class="flex flex-wrap items-center justify-between gap-2 border-b-2 border-arcade-deep pb-2 mb-3">
+              <div>
+                <span class="text-arcade-cyan font-bold text-xs sm:text-sm">FULL-STACK DEVELOPER INTERN</span>
+                <span class="text-white block font-silk text-xs">InnovateX Creative Studio</span>
+              </div>
+              <div class="flex items-center gap-2 font-pixel text-[8px]">
+                <span class="bg-black text-arcade-cyan px-2 py-1 border border-arcade-cyan">+3,200 EXP</span>
+                <span class="text-gray-400">2022 - 2023</span>
+              </div>
+            </div>
+
+            <ul class="font-silk text-xs text-gray-300 space-y-2 list-disc list-inside">
+              <li>Developed pixel-perfect responsive user interfaces and interactive dashboards for 8+ external commercial clients.</li>
+              <li>Integrated secure Stripe payment gateways and third-party RESTful integrations with 99.98% transactional accuracy.</li>
+              <li>Refactored legacy codebases to modern TypeScript modules, decreasing bundle sizes by 32%.</li>
+            </ul>
+
+            <div class="flex flex-wrap gap-1.5 mt-3 pt-3 border-t border-black/40 text-[8px] font-pixel text-arcade-cyan">
+              <span class="bg-black px-2 py-0.5">React</span>
+              <span class="bg-black px-2 py-0.5">JavaScript ES6</span>
+              <span class="bg-black px-2 py-0.5">REST APIs</span>
+              <span class="bg-black px-2 py-0.5">PostgreSQL</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ======================================================== -->
+  <!-- MINI-ARCADE / EASTER EGG: F1 5-RED-LIGHT REACTION GAME  -->
+  <!-- ======================================================== -->
+  <section id="arcade" class="relative py-20 px-4 z-10">
+    <div class="max-w-4xl mx-auto">
+      
+      <!-- Section Title -->
+      <div class="text-center mb-12">
+        <div class="inline-flex items-center gap-2 bg-arcade-surface px-3 py-1 border-2 border-arcade-red text-arcade-red text-[10px] mb-3">
+          <span>MINI-ARCADE // EASTER EGG</span>
+          <span>//</span>
+          <span>FIA LICENSED REFLEX TEST</span>
+        </div>
+        <h2 class="text-2xl sm:text-3xl font-bold text-white tracking-wide">
+          LIGHTS OUT AND AWAY WE GO!
+        </h2>
+        <p class="font-vt text-xl sm:text-2xl text-arcade-gold mt-1">
+          Formula 1 5-Red-Light Reaction Time Challenge. Jump-start detection active!
+        </p>
+      </div>
+
+      <!-- F1 Gantry Enclosure -->
+      <div class="pixel-box bg-[#150a28] p-6 border-4 border-black relative">
+        
+        <!-- Instructions / Rules Banner -->
+        <div class="bg-black/70 p-3 border border-arcade-surface font-silk text-[10px] text-gray-300 mb-6 flex flex-col sm:flex-row items-center justify-between gap-3 text-center sm:text-left">
+          <div>
+            <span class="text-arcade-gold font-pixel block mb-0.5">PROTOCOL:</span>
+            1. Press <strong>ARM START</strong>. 2. Five red lights illuminate sequentially. 3. When lights <strong>GO OUT</strong>, hit <strong>REACT</strong> or press <strong>SPACE</strong> immediately!
+          </div>
+          <div class="shrink-0 bg-arcade-deep px-3 py-1.5 border border-arcade-pink text-arcade-pink font-pixel text-[9px]">
+            FALSE START = DQ
+          </div>
+        </div>
+
+        <!-- 5-Light F1 Gantry Structure -->
+        <div class="bg-black border-4 border-gray-900 p-4 sm:p-6 rounded shadow-[inset_0_0_20px_rgba(0,0,0,0.9)] mb-6">
+          
+          <div class="flex items-center justify-center gap-2 sm:gap-4">
+            
+            <!-- Light Column 1 -->
+            <div class="f1-column flex flex-col items-center gap-2 bg-neutral-900 p-2 sm:p-3 border-2 border-neutral-700">
+              <div id="f1-light-1" class="f1-bulb w-8 h-8 sm:w-12 sm:h-12 rounded-full bg-neutral-950 border-2 border-black transition-all"></div>
+              <div class="w-8 h-8 sm:w-12 sm:h-12 rounded-full bg-neutral-950 border-2 border-black opacity-30"></div>
+            </div>
+
+            <!-- Light Column 2 -->
+            <div class="f1-column flex flex-col items-center gap-2 bg-neutral-900 p-2 sm:p-3 border-2 border-neutral-700">
+              <div id="f1-light-2" class="f1-bulb w-8 h-8 sm:w-12 sm:h-12 rounded-full bg-neutral-950 border-2 border-black transition-all"></div>
+              <div class="w-8 h-8 sm:w-12 sm:h-12 rounded-full bg-neutral-950 border-2 border-black opacity-30"></div>
+            </div>
+
+            <!-- Light Column 3 -->
+            <div class="f1-column flex flex-col items-center gap-2 bg-neutral-900 p-2 sm:p-3 border-2 border-neutral-700">
+              <div id="f1-light-3" class="f1-bulb w-8 h-8 sm:w-12 sm:h-12 rounded-full bg-neutral-950 border-2 border-black transition-all"></div>
+              <div class="w-8 h-8 sm:w-12 sm:h-12 rounded-full bg-neutral-950 border-2 border-black opacity-30"></div>
+            </div>
+
+            <!-- Light Column 4 -->
+            <div class="f1-column flex flex-col items-center gap-2 bg-neutral-900 p-2 sm:p-3 border-2 border-neutral-700">
+              <div id="f1-light-4" class="f1-bulb w-8 h-8 sm:w-12 sm:h-12 rounded-full bg-neutral-950 border-2 border-black transition-all"></div>
+              <div class="w-8 h-8 sm:w-12 sm:h-12 rounded-full bg-neutral-950 border-2 border-black opacity-30"></div>
+            </div>
+
+            <!-- Light Column 5 -->
+            <div class="f1-column flex flex-col items-center gap-2 bg-neutral-900 p-2 sm:p-3 border-2 border-neutral-700">
+              <div id="f1-light-5" class="f1-bulb w-8 h-8 sm:w-12 sm:h-12 rounded-full bg-neutral-950 border-2 border-black transition-all"></div>
+              <div class="w-8 h-8 sm:w-12 sm:h-12 rounded-full bg-neutral-950 border-2 border-black opacity-30"></div>
+            </div>
+
+          </div>
+
+          <!-- Live Status Readout -->
+          <div class="text-center mt-6">
+            <div id="f1-status-msg" class="font-vt text-2xl sm:text-4xl text-arcade-gold tracking-widest uppercase">
+              GANTRY READY // CLICK ARM TO INITIATE
+            </div>
+            <div id="f1-time-readout" class="font-pixel text-xl sm:text-2xl text-white mt-1">
+              -- ms
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Controls & Trigger Button -->
+        <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+          <button id="f1-start-btn" class="w-full sm:w-auto pixel-btn bg-arcade-pink hover:bg-white text-black font-bold px-6 py-4 text-xs sm:text-sm">
+            ARM START SEQUENCE
+          </button>
+          
+          <button id="f1-react-btn" disabled class="w-full sm:w-auto pixel-btn bg-gray-700 text-gray-400 font-bold px-8 py-4 text-xs sm:text-sm cursor-not-allowed">
+            ⚡ REACT (SPACEBAR)
+          </button>
+        </div>
+
+        <!-- Leaderboard & Rating Matrix -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-8 pt-6 border-t-2 border-arcade-surface font-silk text-xs">
+          
+          <!-- Rating Guide -->
+          <div class="bg-black/60 p-3 border border-arcade-deep">
+            <div class="text-arcade-cyan font-pixel text-[9px] mb-2">TELEMETRY BENCHMARK:</div>
+            <div class="space-y-1 text-[10px]">
+              <div class="flex justify-between text-emerald-400">
+                <span>&lt; 200 ms</span>
+                <span>VERSTAPPEN / ALIEN 👽</span>
+              </div>
+              <div class="flex justify-between text-arcade-mint">
+                <span>200 - 250 ms</span>
+                <span>PRO DRIVER / PODIUM 🏆</span>
+              </div>
+              <div class="flex justify-between text-yellow-300">
+                <span>250 - 320 ms</span>
+                <span>SOLID RACER / POINTS 🏎</span>
+              </div>
+              <div class="flex justify-between text-gray-400">
+                <span>&gt; 320 ms</span>
+                <span>BACK OF THE GRID ☕</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Personal Best Record -->
+          <div class="bg-black/60 p-3 border border-arcade-deep flex flex-col justify-between">
+            <div>
+              <div class="text-arcade-gold font-pixel text-[9px] mb-2">PERSONAL TELEMETRY RECORD:</div>
+              <div class="flex items-baseline gap-2">
+                <span id="f1-best-time" class="font-pixel text-2xl text-arcade-mint">--</span>
+                <span class="text-gray-400 text-xs">milliseconds</span>
+              </div>
+            </div>
+            <div id="f1-tier-badge" class="mt-2 text-[10px] text-gray-300">
+              Rank: Unranked Cadet
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ======================================================== -->
+  <!-- FOOTER & INSERT COIN CONTACT PORTAL                      -->
+  <!-- ======================================================== -->
+  <footer id="contact" class="relative py-20 px-4 z-10 bg-arcade-deep border-t-4 border-arcade-surface">
+    <div class="max-w-4xl mx-auto text-center flex flex-col items-center">
+      
+      <!-- Flashing Arcade GameOver Banner -->
+      <div class="inline-flex items-center gap-2 bg-arcade-surface px-4 py-1.5 border-2 border-arcade-pink text-arcade-pink text-xs mb-4">
+        <span class="animate-blink">●</span>
+        <span>CONTINUE? 9... 8... 7...</span>
+      </div>
+
+      <h2 class="text-3xl sm:text-4xl font-bold text-white tracking-wide">
+        INSERT COIN TO CONNECT
+      </h2>
+      <p class="font-vt text-2xl sm:text-3xl text-arcade-cyan mt-1 max-w-xl">
+        Looking for a high-impact engineer for your team, hackathon, or sports-tech venture?
+      </p>
+
+      <!-- Contact Terminal Box -->
+      <div class="w-full max-w-xl pixel-box bg-arcade-surface p-6 border-2 border-arcade-mint my-8 text-left">
+        <div class="flex items-center justify-between border-b border-arcade-deep pb-2 mb-4 font-pixel text-[9px] text-arcade-mint">
+          <span>&gt; TRANSMISSION PORTAL</span>
+          <span>STATUS: LISTENING</span>
+        </div>
+
+        <div class="space-y-3 font-silk text-xs">
+          <p class="text-gray-300">
+            Send an encrypted ping or invite to join your quest party. Always open to collaborating on high-performance web systems, real-time analytics, and AI applications.
+          </p>
+
+          <!-- Email Copy Box -->
+          <div class="flex items-center justify-between bg-black p-3 border border-arcade-mint/50">
+            <span id="contact-email" class="font-pixel text-[10px] sm:text-xs text-arcade-gold select-all">
+              player1.dev@example.com
+            </span>
+            <button id="copy-email-btn" class="pixel-btn bg-arcade-mint hover:bg-white text-black font-bold px-3 py-1.5 text-[9px]">
+              COPY EMAIL
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Social Cartridge Links -->
+      <div class="flex flex-wrap justify-center gap-4 font-pixel text-[10px]">
+        <a href="https://github.com" target="_blank" rel="noopener noreferrer" class="pixel-btn bg-arcade-surface hover:bg-white hover:text-black text-white px-4 py-3 flex items-center gap-2">
+          <span>💾 GITHUB</span>
+        </a>
+        <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" class="pixel-btn bg-arcade-surface hover:bg-arcade-cyan hover:text-black text-white px-4 py-3 flex items-center gap-2">
+          <span>🌐 LINKEDIN</span>
+        </a>
+        <a href="https://twitter.com" target="_blank" rel="noopener noreferrer" class="pixel-btn bg-arcade-surface hover:bg-arcade-pink hover:text-black text-white px-4 py-3 flex items-center gap-2">
+          <span>🐦 TWITTER / X</span>
+        </a>
+        <a href="#hero" class="pixel-btn bg-arcade-gold text-black font-bold px-4 py-3 flex items-center gap-2">
+          <span>📜 RESUME.PDF</span>
+        </a>
+      </div>
+
+      <!-- Copyright -->
+      <div class="mt-16 pt-8 border-t border-arcade-surface w-full text-center font-silk text-[10px] text-gray-500">
+        <p>© 2026 PLAYER 1. BUILT WITH RETRO LOVE, 8-BIT PASSION & PURE PIXELS.</p>
+        <p class="mt-1 text-gray-600">HOSTED ON GITHUB PAGES // VISCA EL BARÇA 💙❤️</p>
+      </div>
+
+    </div>
+  </footer>
+
+  <!-- ======================================================== -->
+  <!-- JAVASCRIPT: WEB AUDIO SYNTH, CANVASES, MINIGAMES, DS UI  -->
+  <!-- ======================================================== -->
+  <script>
+    /* =========================================================
+       1. 8-BIT SYNTHETIC AUDIO ENGINE (Web Audio API)
+       Pure browser-native sound generation; zero external assets.
+       ========================================================= */
+    class RetroAudioEngine {
+      constructor() {
+        this.ctx = null;
+        this.enabled = true;
+      }
+
+      initContext() {
+        if (!this.ctx) {
+          const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+          if (AudioContextClass) {
+            this.ctx = new AudioContextClass();
+          }
+        }
+        if (this.ctx && this.ctx.state === 'suspended') {
+          this.ctx.resume();
+        }
+      }
+
+      // Crisp UI Beep (Square Wave)
+      playBlip(freq = 440, duration = 0.05) {
+        if (!this.enabled) return;
+        this.initContext();
+        if (!this.ctx) return;
+
+        try {
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+          osc.type = 'square';
+          osc.frequency.setValueAtTime(freq, this.ctx.currentTime);
+          
+          gain.gain.setValueAtTime(0.08, this.ctx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + duration);
+          
+          osc.connect(gain);
+          gain.connect(this.ctx.destination);
+          
+          osc.start();
+          osc.stop(this.ctx.currentTime + duration);
+        } catch (e) {
+          console.warn('Audio blip error:', e);
+        }
+      }
+
+      // Coin / Confirmation Jingle
+      playCoin() {
+        if (!this.enabled) return;
+        this.initContext();
+        if (!this.ctx) return;
+
+        try {
+          const now = this.ctx.currentTime;
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+          osc.type = 'square';
+
+          osc.frequency.setValueAtTime(987.77, now); // B5
+          osc.frequency.setValueAtTime(1318.51, now + 0.08); // E6
+
+          gain.gain.setValueAtTime(0.08, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.35);
+
+          osc.connect(gain);
+          gain.connect(this.ctx.destination);
+
+          osc.start(now);
+          osc.stop(now + 0.35);
+        } catch (e) {
+          console.warn('Audio coin error:', e);
+        }
+      }
+
+      // Football Juggle Bounce Sound (Pitch drop)
+      playKick() {
+        if (!this.enabled) return;
+        this.initContext();
+        if (!this.ctx) return;
+
+        try {
+          const now = this.ctx.currentTime;
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+          osc.type = 'triangle';
+
+          osc.frequency.setValueAtTime(220, now);
+          osc.frequency.exponentialRampToValueAtTime(45, now + 0.12);
+
+          gain.gain.setValueAtTime(0.2, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.12);
+
+          osc.connect(gain);
+          gain.connect(this.ctx.destination);
+
+          osc.start(now);
+          osc.stop(now + 0.12);
+        } catch (e) {
+          console.warn('Audio kick error:', e);
+        }
+      }
+
+      // F1 Light Sequence Tone
+      playLightBeep() {
+        this.playBlip(550, 0.12);
+      }
+
+      // F1 Lights Out Start Tone
+      playGoTone() {
+        if (!this.enabled) return;
+        this.initContext();
+        if (!this.ctx) return;
+
+        try {
+          const now = this.ctx.currentTime;
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+          osc.type = 'square';
+
+          osc.frequency.setValueAtTime(1200, now);
+
+          gain.gain.setValueAtTime(0.12, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.25);
+
+          osc.connect(gain);
+          gain.connect(this.ctx.destination);
+
+          osc.start(now);
+          osc.stop(now + 0.25);
+        } catch (e) {
+          console.warn('Audio go error:', e);
+        }
+      }
+
+      // False Start Buzzer (Dissonant Sawtooth)
+      playBuzzer() {
+        if (!this.enabled) return;
+        this.initContext();
+        if (!this.ctx) return;
+
+        try {
+          const now = this.ctx.currentTime;
+          const osc1 = this.ctx.createOscillator();
+          const osc2 = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+
+          osc1.type = 'sawtooth';
+          osc2.type = 'sawtooth';
+
+          osc1.frequency.setValueAtTime(120, now);
+          osc2.frequency.setValueAtTime(127, now);
+
+          gain.gain.setValueAtTime(0.18, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.4);
+
+          osc1.connect(gain);
+          osc2.connect(gain);
+          gain.connect(this.ctx.destination);
+
+          osc1.start(now);
+          osc2.start(now);
+          osc1.stop(now + 0.4);
+          osc2.stop(now + 0.4);
+        } catch (e) {
+          console.warn('Audio buzzer error:', e);
+        }
+      }
+
+      // Fanfare Jingle for High Scores
+      playFanfare() {
+        if (!this.enabled) return;
+        this.initContext();
+        if (!this.ctx) return;
+
+        const notes = [523.25, 659.25, 783.99, 1046.50];
+        notes.forEach((freq, idx) => {
+          setTimeout(() => {
+            this.playBlip(freq, 0.15);
+          }, idx * 110);
+        });
+      }
+    }
+
+    const sound = new RetroAudioEngine();
+
+    // Hook audio init to first user interaction
+    window.addEventListener('click', () => sound.initContext(), { once: true });
+    window.addEventListener('keydown', () => sound.initContext(), { once: true });
+
+    /* =========================================================
+       2. SFX & CRT SCANLINES TOGGLES
+       ========================================================= */
+    const sfxBtn = document.getElementById('sfx-toggle-btn');
+    const sfxIcon = document.getElementById('sfx-icon');
+    const sfxText = document.getElementById('sfx-text');
+
+    sfxBtn.addEventListener('click', () => {
+      sound.enabled = !sound.enabled;
+      if (sound.enabled) {
+        sound.initContext();
+        sfxIcon.textContent = '🔊';
+        sfxText.textContent = 'SFX: ON';
+        sound.playCoin();
+      } else {
+        sfxIcon.textContent = '🔇';
+        sfxText.textContent = 'SFX: OFF';
+      }
+    });
+
+    const crtBtn = document.getElementById('crt-toggle-btn');
+    const crtScreen = document.getElementById('crt-screen');
+    let crtEnabled = true;
+
+    crtBtn.addEventListener('click', () => {
+      crtEnabled = !crtEnabled;
+      sound.playBlip(600, 0.05);
+      if (crtEnabled) {
+        crtScreen.classList.remove('crt-off');
+        crtBtn.querySelector('span').textContent = 'CRT: ON';
+      } else {
+        crtScreen.classList.add('crt-off');
+        crtBtn.querySelector('span').textContent = 'CRT: OFF';
+      }
+    });
+
+    // Score ticker on scroll
+    let currentScore = 2480;
+    const scoreEl = document.getElementById('hud-score');
+    window.addEventListener('scroll', () => {
+      currentScore += 1;
+      scoreEl.textContent = String(currentScore).padStart(6, '0');
+    }, { passive: true });
+
+    /* =========================================================
+       3. RETRO STARRY NIGHT BACKGROUND CANVAS
+       ========================================================= */
+    const starsCanvas = document.getElementById('stars-canvas');
+    const starsCtx = starsCanvas.getContext('2d');
+    let stars = [];
+
+    function resizeStarsCanvas() {
+      starsCanvas.width = window.innerWidth;
+      starsCanvas.height = window.innerHeight;
+      initStars();
+    }
+
+    function initStars() {
+      stars = [];
+      const count = Math.floor((starsCanvas.width * starsCanvas.height) / 5000);
+      for (let i = 0; i < count; i++) {
+        stars.push({
+          x: Math.random() * starsCanvas.width,
+          y: Math.random() * starsCanvas.height,
+          size: Math.random() > 0.85 ? 3 : 2,
+          speed: 0.15 + Math.random() * 0.35,
+          color: Math.random() > 0.5 ? '#ff2a85' : (Math.random() > 0.5 ? '#00e5ff' : '#ffffff'),
+          twinkle: Math.random() * Math.PI
+        });
+      }
+    }
+
+    function renderStars() {
+      starsCtx.clearRect(0, 0, starsCanvas.width, starsCanvas.height);
+      
+      for (let i = 0; i < stars.length; i++) {
+        const star = stars[i];
+        star.twinkle += 0.04;
+        const alpha = 0.3 + 0.7 * Math.abs(Math.sin(star.twinkle));
+        
+        starsCtx.fillStyle = star.color;
+        starsCtx.globalAlpha = alpha;
+        starsCtx.fillRect(star.x, star.y, star.size, star.size);
+
+        // Slow drifting star motion
+        star.y += star.speed;
+        if (star.y > starsCanvas.height) {
+          star.y = 0;
+          star.x = Math.random() * starsCanvas.width;
+        }
+      }
+      starsCtx.globalAlpha = 1;
+      requestAnimationFrame(renderStars);
+    }
+
+    window.addEventListener('resize', resizeStarsCanvas);
+    resizeStarsCanvas();
+    renderStars();
+
+    /* =========================================================
+       4. INTERACTIVE PIXEL SPARK CURSOR TRAIL
+       ========================================================= */
+    const cursorCanvas = document.getElementById('cursor-canvas');
+    const cursorCtx = cursorCanvas.getContext('2d');
+    let sparks = [];
+
+    function resizeCursorCanvas() {
+      cursorCanvas.width = window.innerWidth;
+      cursorCanvas.height = window.innerHeight;
+    }
+    window.addEventListener('resize', resizeCursorCanvas);
+    resizeCursorCanvas();
+
+    window.addEventListener('mousemove', (e) => {
+      // Spawn trail sparks
+      if (Math.random() > 0.3) {
+        sparks.push({
+          x: e.clientX,
+          y: e.clientY,
+          vx: (Math.random() - 0.5) * 3,
+          vy: (Math.random() - 0.5) * 3 - 1,
+          size: Math.random() > 0.6 ? 4 : 2,
+          color: Math.random() > 0.5 ? '#ff2a85' : '#00ff88',
+          life: 1.0
+        });
+      }
+    });
+
+    window.addEventListener('click', (e) => {
+      // Burst of sparks on click
+      for (let i = 0; i < 14; i++) {
+        const angle = Math.random() * Math.PI * 2;
+        const speed = 2 + Math.random() * 4;
+        sparks.push({
+          x: e.clientX,
+          y: e.clientY,
+          vx: Math.cos(angle) * speed,
+          vy: Math.sin(angle) * speed,
+          size: 4,
+          color: Math.random() > 0.5 ? '#00e5ff' : '#ffbe0b',
+          life: 1.0
+        });
+      }
+    });
+
+    function renderSparks() {
+      cursorCtx.clearRect(0, 0, cursorCanvas.width, cursorCanvas.height);
+      
+      for (let i = sparks.length - 1; i >= 0; i--) {
+        const p = sparks[i];
+        p.x += p.vx;
+        p.y += p.vy;
+        p.life -= 0.035;
+
+        if (p.life <= 0) {
+          sparks.splice(i, 1);
+          continue;
+        }
+
+        cursorCtx.fillStyle = p.color;
+        cursorCtx.globalAlpha = p.life;
+        cursorCtx.fillRect(Math.floor(p.x), Math.floor(p.y), p.size, p.size);
+      }
+      cursorCtx.globalAlpha = 1;
+      requestAnimationFrame(renderSparks);
+    }
+    renderSparks();
+
+    /* =========================================================
+       5. HERO CAMP NOU ARENA: CREST, JUGGLING PLAYER & BALL
+       ========================================================= */
+    const pitchCanvas = document.getElementById('hero-pitch-canvas');
+    const pitchCtx = pitchCanvas.getContext('2d');
+    const juggleCounterEl = document.getElementById('juggle-counter');
+    const juggleBestEl = document.getElementById('juggle-best');
+    const speechBubbleEl = document.getElementById('player-speech-bubble');
+    const resetBallBtn = document.getElementById('reset-ball-btn');
+
+    let juggleCount = 0;
+    let juggleBest = 0;
+    let speechTimer = null;
+
+    const speechQuotes = [
+      "Visca el Barça! 🔵🔴",
+      "Tiki-Taka Code!",
+      "Golazo into Production!",
+      "Hat-trick Deployed!",
+      "Sub-second latency!",
+      "Pass & Move!",
+      "Masterclass in progress!"
+    ];
+
+    function showRandomSpeech() {
+      const quote = speechQuotes[Math.floor(Math.random() * speechQuotes.length)];
+      speechBubbleEl.textContent = quote;
+      speechBubbleEl.style.opacity = '1';
+      clearTimeout(speechTimer);
+      speechTimer = setTimeout(() => {
+        speechBubbleEl.style.opacity = '0';
+      }, 2000);
+    }
+
+    // Ball Physics State
+    const ball = {
+      x: 190,
+      y: 180,
+      radius: 9,
+      vx: 1.5,
+      vy: -6,
+      gravity: 0.35,
+      rotation: 0
+    };
+
+    // Blaugrana Player Sprite State
+    const player = {
+      x: 160,
+      y: 210,
+      isKicking: false,
+      kickTimer: 0
+    };
+
+    // Draw 16-Bit Barcelona Crest in corner of pitch
+    function drawBarcaCrest(ctx, x, y) {
+      ctx.save();
+      ctx.translate(x, y);
+
+      // Crest Shield Outline
+      ctx.fillStyle = "#edbb00"; // Gold border
+      ctx.fillRect(0, 0, 36, 42);
+      ctx.fillRect(3, 42, 30, 4);
+      ctx.fillRect(9, 46, 18, 3);
+
+      // Crest Inner
+      ctx.fillStyle = "#ffffff";
+      ctx.fillRect(3, 3, 30, 39);
+
+      // Top Left: St. George Cross (Red on White)
+      ctx.fillStyle = "#ffffff";
+      ctx.fillRect(4, 4, 13, 15);
+      ctx.fillStyle = "#d0021b";
+      ctx.fillRect(9, 4, 3, 15);
+      ctx.fillRect(4, 10, 13, 3);
+
+      // Top Right: Catalan Senyera (Yellow and Red Stripes)
+      ctx.fillStyle = "#edbb00";
+      ctx.fillRect(18, 4, 14, 15);
+      ctx.fillStyle = "#d0021b";
+      ctx.fillRect(20, 4, 2, 15);
+      ctx.fillRect(24, 4, 2, 15);
+      ctx.fillRect(28, 4, 2, 15);
+
+      // Middle Ribbon: Gold & Ball
+      ctx.fillStyle = "#edbb00";
+      ctx.fillRect(4, 19, 28, 5);
+      ctx.fillStyle = "#333333";
+      ctx.fillRect(16, 20, 4, 3);
+
+      // Bottom: Blaugrana Stripes (Blue & Garnet)
+      ctx.fillStyle = "#004d98";
+      ctx.fillRect(4, 24, 28, 16);
+      ctx.fillStyle = "#a50044";
+      ctx.fillRect(8, 24, 4, 16);
+      ctx.fillRect(16, 24, 4, 16);
+      ctx.fillRect(24, 24, 4, 16);
+
+      ctx.restore();
+    }
+
+    // Draw Pixel Blaugrana Player
+    function drawPlayer(ctx, px, py, isKicking) {
+      ctx.save();
+      ctx.translate(px, py);
+
+      // Hair & Head
+      ctx.fillStyle = "#3e2312";
+      ctx.fillRect(18, 0, 20, 10);
+      ctx.fillStyle = "#f6b38c"; // Skin
+      ctx.fillRect(18, 10, 18, 12);
+
+      // Eyes
+      ctx.fillStyle = "#000";
+      ctx.fillRect(24, 13, 3, 3);
+      ctx.fillRect(31, 13, 3, 3);
+
+      // Barca Jersey (#10 Blaugrana)
+      ctx.fillStyle = "#004d98";
+      ctx.fillRect(14, 22, 26, 26);
+      ctx.fillStyle = "#a50044";
+      ctx.fillRect(20, 22, 6, 26);
+      ctx.fillRect(32, 22, 6, 26);
+
+      // Gold #10 print on chest
+      ctx.fillStyle = "#edbb00";
+      ctx.fillRect(26, 30, 2, 8);
+      ctx.fillRect(30, 30, 4, 8);
+
+      // Left Standing Leg
+      ctx.fillStyle = "#004d98";
+      ctx.fillRect(18, 48, 8, 16);
+      ctx.fillStyle = "#f6b38c";
+      ctx.fillRect(19, 64, 6, 12);
+      ctx.fillStyle = "#111"; // Cleats
+      ctx.fillRect(17, 76, 11, 6);
+
+      // Right Juggling Leg (Animates on kick)
+      if (isKicking) {
+        ctx.fillStyle = "#004d98";
+        ctx.fillRect(30, 48, 16, 8);
+        ctx.fillStyle = "#f6b38c";
+        ctx.fillRect(42, 44, 8, 8);
+        ctx.fillStyle = "#111"; // Cleats kicking up
+        ctx.fillRect(46, 40, 10, 8);
+      } else {
+        ctx.fillStyle = "#004d98";
+        ctx.fillRect(30, 48, 8, 16);
+        ctx.fillStyle = "#f6b38c";
+        ctx.fillRect(31, 64, 6, 12);
+        ctx.fillStyle = "#111";
+        ctx.fillRect(30, 76, 11, 6);
+      }
+
+      ctx.restore();
+    }
+
+    // Draw Pixel Football
+    function drawBall(ctx, bx, by, rot) {
+      ctx.save();
+      ctx.translate(bx, by);
+      ctx.rotate(rot);
+
+      // Ball White Circle
+      ctx.fillStyle = "#ffffff";
+      ctx.beginPath();
+      ctx.arc(0, 0, ball.radius, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.lineWidth = 2;
+      ctx.strokeStyle = "#000000";
+      ctx.stroke();
+
+      // Pixel Pentagons on Ball
+      ctx.fillStyle = "#000000";
+      ctx.fillRect(-3, -3, 6, 6);
+      ctx.fillRect(-7, -7, 4, 4);
+      ctx.fillRect(3, -7, 4, 4);
+      ctx.fillRect(-7, 3, 4, 4);
+      ctx.fillRect(3, 3, 4, 4);
+
+      ctx.restore();
+    }
+
+    // Juggle Click Action
+    function performJuggle(clickX, clickY) {
+      sound.playKick();
+      juggleCount++;
+      if (juggleCount > juggleBest) {
+        juggleBest = juggleCount;
+        juggleBestEl.textContent = juggleBest;
+      }
+      juggleCounterEl.textContent = juggleCount;
+
+      // Kick animation trigger
+      player.isKicking = true;
+      player.kickTimer = 12;
+
+      // Ball physics kick
+      ball.vy = -7.5 - Math.random() * 2.5;
+      ball.vx = (Math.random() - 0.5) * 3;
+
+      // Add to HUD score
+      currentScore += 100;
+      scoreEl.textContent = String(currentScore).padStart(6, '0');
+
+      showRandomSpeech();
+    }
+
+    pitchCanvas.addEventListener('click', (e) => {
+      const rect = pitchCanvas.getBoundingClientRect();
+      const clickX = e.clientX - rect.left;
+      const clickY = e.clientY - rect.top;
+      performJuggle(clickX, clickY);
+    });
+
+    resetBallBtn.addEventListener('click', () => {
+      ball.x = 190;
+      ball.y = 120;
+      ball.vx = 0;
+      ball.vy = -4;
+      juggleCount = 0;
+      juggleCounterEl.textContent = '0';
+      sound.playBlip(300, 0.08);
+    });
+
+    // Pitch Canvas Loop
+    function renderPitch() {
+      pitchCtx.clearRect(0, 0, pitchCanvas.width, pitchCanvas.height);
+
+      // Pitch Grass Background
+      pitchCtx.fillStyle = "#0d5c2c";
+      pitchCtx.fillRect(0, 0, pitchCanvas.width, pitchCanvas.height);
+
+      // Alternating Grass Stripes
+      pitchCtx.fillStyle = "#094a22";
+      for (let i = 0; i < pitchCanvas.height; i += 34) {
+        pitchCtx.fillRect(0, i, pitchCanvas.width, 17);
+      }
+
+      // Barcelona Crest in Top Right
+      drawBarcaCrest(pitchCtx, pitchCanvas.width - 50, 12);
+
+      // Player kick timer countdown
+      if (player.isKicking) {
+        player.kickTimer--;
+        if (player.kickTimer <= 0) {
+          player.isKicking = false;
+        }
+      }
+
+      // Ball Physics Update
+      ball.x += ball.vx;
+      ball.y += ball.vy;
+      ball.vy += ball.gravity;
+      ball.rotation += ball.vx * 0.05;
+
+      // Ball Ground Bounce
+      const groundY = 295;
+      if (ball.y >= groundY) {
+        ball.y = groundY;
+        ball.vy = -ball.vy * 0.65;
+        if (Math.abs(ball.vy) < 1) {
+          ball.vy = 0;
+        }
+        ball.vx *= 0.9;
+        // If ball hit ground, reset combo
+        if (juggleCount > 0 && Math.abs(ball.vy) < 0.5) {
+          juggleCount = 0;
+          juggleCounterEl.textContent = '0';
+        }
+      }
+
+      // Ball Wall Bounds
+      if (ball.x <= ball.radius) {
+        ball.x = ball.radius;
+        ball.vx = -ball.vx;
+      } else if (ball.x >= pitchCanvas.width - ball.radius) {
+        ball.x = pitchCanvas.width - ball.radius;
+        ball.vx = -ball.vx;
+      }
+
+      // Draw Player & Ball
+      drawPlayer(pitchCtx, player.x, player.y, player.isKicking);
+      drawBall(pitchCtx, ball.x, ball.y, ball.rotation);
+
+      requestAnimationFrame(renderPitch);
+    }
+    renderPitch();
+
+    /* =========================================================
+       6. DUAL-SCREEN NINTENDO DS HANDHELD CONTROLS & TABS
+       ========================================================= */
+    const dsScreenContent = document.getElementById('ds-screen-content');
+    const tabBio = document.getElementById('ds-tab-bio');
+    const tabStatus = document.getElementById('ds-tab-status');
+    const tabGear = document.getElementById('ds-tab-gear');
+    const tabButtons = [tabBio, tabStatus, tabGear];
+
+    const tabContents = {
+      bio: `
+        <div class="text-arcade-mint font-pixel text-[10px] mb-1.5 flex items-center justify-between">
+          <span>&gt; MISSION BRIEFING</span>
+          <span class="text-[8px] text-gray-400">TAB 1/3</span>
+        </div>
+        <p class="text-[10px] text-gray-300 leading-normal">
+          Driven by crafting clean codebases and competitive sports algorithms. Whether deploying low-latency telemetry pipelines or engineering responsive UI experiences, every line is treated like a championship final.
+        </p>
+        <div class="mt-2 p-1.5 bg-black/60 border border-arcade-pink text-arcade-pink text-[9px] font-pixel">
+          MOTTO: "Tiki-taka coding with Formula 1 speed."
+        </div>
+      `,
+      status: `
+        <div class="text-arcade-cyan font-pixel text-[10px] mb-1.5 flex items-center justify-between">
+          <span>&gt; DIAGNOSTICS & VITALS</span>
+          <span class="text-[8px] text-gray-400">TAB 2/3</span>
+        </div>
+        <div class="space-y-1 text-[9px]">
+          <div class="flex justify-between"><span>BASE LOCATION:</span><span class="text-white">Earth // Station 01</span></div>
+          <div class="flex justify-between"><span>COFFEE LEVEL:</span><span class="text-arcade-gold font-pixel">94% FULL</span></div>
+          <div class="flex justify-between"><span>ACTIVE TASKS:</span><span class="text-arcade-mint font-pixel">4 THREADS</span></div>
+          <div class="flex justify-between"><span>SYSTEM HEALTH:</span><span class="text-arcade-cyan font-pixel">OPTIMAL</span></div>
+        </div>
+        <div class="mt-2 text-[8px] text-gray-400">
+          Last Git Deployment: <span class="text-arcade-pink">12 mins ago (Clean Build)</span>
+        </div>
+      `,
+      gear: `
+        <div class="text-arcade-gold font-pixel text-[10px] mb-1.5 flex items-center justify-between">
+          <span>&gt; INVENTORY GEAR</span>
+          <span class="text-[8px] text-gray-400">TAB 3/3</span>
+        </div>
+        <div class="grid grid-cols-2 gap-1.5 text-[9px]">
+          <div class="bg-black/50 p-1 border border-gray-800">⌨ Gateron Yellow 65%</div>
+          <div class="bg-black/50 p-1 border border-gray-800">🖥 Dual 144Hz 4K Displays</div>
+          <div class="bg-black/50 p-1 border border-gray-800">☕ AeroPress Brewer</div>
+          <div class="bg-black/50 p-1 border border-gray-800">🎧 Noise Cancelling Can</div>
+        </div>
+        <div class="mt-1 text-[8px] text-arcade-mint font-pixel text-center">
+          +15 DEV FLOW BUFF ACTIVE
+        </div>
+      `
+    };
+
+    function selectDSTab(key, btn) {
+      sound.playBlip(750, 0.04);
+      dsScreenContent.innerHTML = tabContents[key];
+      tabButtons.forEach(b => {
+        b.classList.remove('bg-arcade-pink', 'text-black', 'font-bold');
+        b.classList.add('bg-arcade-surface', 'text-gray-300');
+      });
+      btn.classList.add('bg-arcade-pink', 'text-black', 'font-bold');
+      btn.classList.remove('bg-arcade-surface', 'text-gray-300');
+    }
+
+    tabBio.addEventListener('click', () => selectDSTab('bio', tabBio));
+    tabStatus.addEventListener('click', () => selectDSTab('status', tabStatus));
+    tabGear.addEventListener('click', () => selectDSTab('gear', tabGear));
+
+    // D-Pad and Buttons SFX
+    document.getElementById('dpad-up').addEventListener('click', () => { sound.playBlip(800, 0.05); selectDSTab('bio', tabBio); });
+    document.getElementById('dpad-down').addEventListener('click', () => { sound.playBlip(700, 0.05); selectDSTab('gear', tabGear); });
+    document.getElementById('dpad-left').addEventListener('click', () => { sound.playBlip(650, 0.05); selectDSTab('bio', tabBio); });
+    document.getElementById('dpad-right').addEventListener('click', () => { sound.playBlip(850, 0.05); selectDSTab('status', tabStatus); });
+
+    document.getElementById('btn-a').addEventListener('click', () => sound.playCoin());
+    document.getElementById('btn-b').addEventListener('click', () => sound.playBlip(350, 0.08));
+    document.getElementById('btn-x').addEventListener('click', () => sound.playBlip(900, 0.04));
+    document.getElementById('btn-y').addEventListener('click', () => sound.playBlip(600, 0.04));
+    document.getElementById('btn-start').addEventListener('click', () => sound.playFanfare());
+    document.getElementById('btn-select').addEventListener('click', () => sound.playBlip(500, 0.06));
+
+    /* =========================================================
+       7. CARTRIDGE FILTER SYSTEM
+       ========================================================= */
+    const filterBtns = document.querySelectorAll('.filter-btn');
+    const projectCards = document.querySelectorAll('.project-card');
+
+    filterBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        sound.playBlip(500, 0.04);
+        const filter = btn.getAttribute('data-filter');
+
+        // Update active filter style
+        filterBtns.forEach(b => {
+          b.classList.remove('bg-arcade-pink', 'text-black', 'font-bold');
+          b.classList.add('bg-arcade-surface', 'text-white');
+        });
+        btn.classList.add('bg-arcade-pink', 'text-black', 'font-bold');
+        btn.classList.remove('bg-arcade-surface', 'text-white');
+
+        // Filter cards
+        projectCards.forEach(card => {
+          const cats = card.getAttribute('data-category') || '';
+          if (filter === 'all' || cats.includes(filter)) {
+            card.style.display = 'block';
+          } else {
+            card.style.display = 'none';
+          }
+        });
+      });
+    });
+
+    /* =========================================================
+       8. MINI-ARCADE: FORMULA 1 5-RED-LIGHT REACTION MINIGAME
+       ========================================================= */
+    const f1LightEls = [
+      document.getElementById('f1-light-1'),
+      document.getElementById('f1-light-2'),
+      document.getElementById('f1-light-3'),
+      document.getElementById('f1-light-4'),
+      document.getElementById('f1-light-5')
+    ];
+    const f1StartBtn = document.getElementById('f1-start-btn');
+    const f1ReactBtn = document.getElementById('f1-react-btn');
+    const f1StatusMsg = document.getElementById('f1-status-msg');
+    const f1TimeReadout = document.getElementById('f1-time-readout');
+    const f1BestTimeEl = document.getElementById('f1-best-time');
+    const f1TierBadge = document.getElementById('f1-tier-badge');
+
+    let f1State = 'idle'; // 'idle', 'arming', 'lights-on', 'waiting-out', 'ready-to-react', 'finished'
+    let f1SequenceTimers = [];
+    let f1StartTime = 0;
+    let f1BestTime = localStorage.getItem('f1_portfolio_best_reaction') ? parseInt(localStorage.getItem('f1_portfolio_best_reaction'), 10) : null;
+
+    if (f1BestTime) {
+      f1BestTimeEl.textContent = f1BestTime;
+      f1TierBadge.textContent = getTierDescription(f1BestTime);
+    }
+
+    function getTierDescription(ms) {
+      if (ms < 200) return 'Rank: Max Verstappen Alien 👽';
+      if (ms < 250) return 'Rank: F1 Podium Champion 🏆';
+      if (ms < 320) return 'Rank: Point Scorer Racer 🏎';
+      return 'Rank: Pit Lane Starter ☕';
+    }
+
+    function resetF1Lights() {
+      f1LightEls.forEach(light => {
+        light.classList.remove('bg-red-600', 'shadow-[0_0_20px_#ff0033]');
+        light.classList.add('bg-neutral-950');
+      });
+    }
+
+    function startF1Sequence() {
+      // Clear any running timers
+      f1SequenceTimers.forEach(t => clearTimeout(t));
+      f1SequenceTimers = [];
+
+      resetF1Lights();
+      f1State = 'arming';
+
+      f1StatusMsg.textContent = 'SEQUENCE INITIATED // HOLD REACTION...';
+      f1StatusMsg.className = 'font-vt text-2xl sm:text-4xl text-arcade-gold tracking-widest uppercase';
+      f1TimeReadout.textContent = '-- ms';
+
+      f1StartBtn.disabled = true;
+      f1StartBtn.classList.add('opacity-50', 'cursor-not-allowed');
+
+      f1ReactBtn.disabled = false;
+      f1ReactBtn.classList.remove('bg-gray-700', 'text-gray-400', 'cursor-not-allowed');
+      f1ReactBtn.classList.add('bg-arcade-mint', 'hover:bg-white', 'text-black', 'cursor-pointer');
+
+      // Sequence: 5 lights turn on at 1000ms intervals
+      for (let i = 0; i < 5; i++) {
+        const timer = setTimeout(() => {
+          f1LightEls[i].classList.remove('bg-neutral-950');
+          f1LightEls[i].classList.add('bg-red-600', 'shadow-[0_0_20px_#ff0033]');
+          sound.playLightBeep();
+
+          if (i === 4) {
+            // All 5 red lights are on!
+            f1State = 'waiting-out';
+            f1StatusMsg.textContent = 'ALL 5 LIGHTS ON // AWAITING LIGHTS OUT!';
+
+            // Random delay between 1.0s and 3.2s
+            const randomDelay = 1000 + Math.random() * 2200;
+            const outTimer = setTimeout(() => {
+              // LIGHTS OUT!
+              resetF1Lights();
+              f1State = 'ready-to-react';
+              f1StartTime = performance.now();
+              sound.playGoTone();
+              f1StatusMsg.textContent = 'LIGHTS OUT! GO GO GO!';
+              f1StatusMsg.className = 'font-vt text-2xl sm:text-4xl text-emerald-400 tracking-widest uppercase animate-pulse';
+            }, randomDelay);
+
+            f1SequenceTimers.push(outTimer);
+          }
+        }, (i + 1) * 900);
+
+        f1SequenceTimers.push(timer);
+      }
+    }
+
+    function handleF1Reaction() {
+      if (f1State === 'idle' || f1State === 'finished') {
+        return;
+      }
+
+      if (f1State === 'arming' || f1State === 'waiting-out') {
+        // FALSE START / JUMP START!
+        f1SequenceTimers.forEach(t => clearTimeout(t));
+        f1SequenceTimers = [];
+        resetF1Lights();
+        sound.playBuzzer();
+
+        f1State = 'finished';
+        f1StatusMsg.textContent = '⚠ FALSE START! 10-SEC PENALTY / DQ';
+        f1StatusMsg.className = 'font-vt text-2xl sm:text-4xl text-arcade-red tracking-widest uppercase';
+        f1TimeReadout.textContent = 'JUMP START';
+
+        f1StartBtn.disabled = false;
+        f1StartBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+        f1ReactBtn.disabled = true;
+        f1ReactBtn.className = 'w-full sm:w-auto pixel-btn bg-gray-700 text-gray-400 font-bold px-8 py-4 text-xs sm:text-sm cursor-not-allowed';
+        return;
+      }
+
+      if (f1State === 'ready-to-react') {
+        // VALID REACTION!
+        const reactionMs = Math.round(performance.now() - f1StartTime);
+        f1State = 'finished';
+
+        sound.playFanfare();
+        f1StatusMsg.textContent = 'TELEMETRY RECORDED!';
+        f1StatusMsg.className = 'font-vt text-2xl sm:text-4xl text-arcade-mint tracking-widest uppercase';
+        f1TimeReadout.textContent = `${reactionMs} ms`;
+
+        // Check best record
+        if (!f1BestTime || reactionMs < f1BestTime) {
+          f1BestTime = reactionMs;
+          localStorage.setItem('f1_portfolio_best_reaction', f1BestTime);
+          f1BestTimeEl.textContent = f1BestTime;
+        }
+
+        f1TierBadge.textContent = getTierDescription(reactionMs);
+
+        // Reset Buttons
+        f1StartBtn.disabled = false;
+        f1StartBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+        f1ReactBtn.disabled = true;
+        f1ReactBtn.className = 'w-full sm:w-auto pixel-btn bg-gray-700 text-gray-400 font-bold px-8 py-4 text-xs sm:text-sm cursor-not-allowed';
+      }
+    }
+
+    f1StartBtn.addEventListener('click', startF1Sequence);
+    f1ReactBtn.addEventListener('click', handleF1Reaction);
+
+    // Keyboard Spacebar listener for reaction
+    window.addEventListener('keydown', (e) => {
+      if (e.code === 'Space') {
+        // Only react if arcade is on screen or user is testing
+        if (f1State === 'arming' || f1State === 'waiting-out' || f1State === 'ready-to-react') {
+          e.preventDefault();
+          handleF1Reaction();
+        }
+      }
+    });
+
+    /* =========================================================
+       9. COPY EMAIL INTERACTION
+       ========================================================= */
+    const copyEmailBtn = document.getElementById('copy-email-btn');
+    const contactEmailEl = document.getElementById('contact-email');
+
+    copyEmailBtn.addEventListener('click', () => {
+      sound.playCoin();
+      const email = contactEmailEl.textContent.trim();
+      navigator.clipboard.writeText(email).then(() => {
+        const origText = copyEmailBtn.textContent;
+        copyEmailBtn.textContent = 'COPIED! ✓';
+        copyEmailBtn.classList.add('bg-arcade-pink', 'text-white');
+        setTimeout(() => {
+          copyEmailBtn.textContent = origText;
+          copyEmailBtn.classList.remove('bg-arcade-pink', 'text-white');
+        }, 2000);
+      }).catch(() => {
+        alert('Email: ' + email);
+      });
+    });
+
+    // Retro button click sound on any button with .pixel-btn
+    document.querySelectorAll('.pixel-btn').forEach(btn => {
+      btn.addEventListener('mouseenter', () => {
+        sound.playBlip(580, 0.02);
+      });
+    });
+  </script>
+</body>
+</html>
+
